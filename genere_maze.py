@@ -1,7 +1,11 @@
 
 import random
 from collections import deque
-# Kruskal
+from parsing import pars_dict
+
+# j'ai implementé l'algorithm de Kruskal pour generer le maze
+# j'ai implémnter l'algotithm de BFS (Breadth-First Search) pour le solver
+# la fonction display est generé par ia juste pour avoir un rendu
 
 class Maze:
     def __init__(self, width, height):
@@ -188,10 +192,13 @@ def config_maze(dictionaire):
     grille = Maze(width, heigt)
     grille.generer()
     grille.display()
+    print(entry)
+    print(exit)
     path = grille.solver(entry, exit)
     print(path)
 
 
 if __name__ == "__main__":
-    data = {'WIDTH': '20', 'HEIGHT': '15', 'ENTRY': '0,0', 'EXIT': '19,14'}
-    config_maze(data)
+    data = pars_dict()
+    if data:
+        config_maze(data)

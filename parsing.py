@@ -1,5 +1,11 @@
 import sys
 
+# parsing.py
+
+# le parsing est complet, juste je check pas name du fichier .txt
+# je regarde juste ca se termine bien par .txt
+# j'ai pas non plus check les values pour les cles optionel.
+# par la suite j'ameliorerai le parsing avec des class et des blocks try execpte
 
 def is_valide(item):
     if item.count("=") != 1:
@@ -54,26 +60,26 @@ def check_dict(dictionaire):
     optional_keys = {"SEED"}
     for name in dictionaire:
         if name not in valide_key and name not in optional_keys:
-            print("Error invalide Key, value")
+            print("Error invalide Key")
             return False
 
     keys = set(dictionaire.keys())
 
     if not valide_key.issubset(keys):
-        print("Error invalide Key, value")
+        print("Error invalide Key")
         return False
     entry = dictionaire["ENTRY"]
     exit = dictionaire["EXIT"]
     if entry == exit:
-        print("Error invalide Key, value")
+        print("Error same entry and exit")
         return False
     e_w, e_h = map(int, entry.split(","))
     o_w, o_h = map(int, exit.split(","))
     if e_h > int(dictionaire["HEIGHT"]) or o_h > int(dictionaire["HEIGHT"]):
-        
+        print("Error")
         return False
     if e_w > int(dictionaire["WIDTH"]) or o_w > int(dictionaire["WIDTH"]):
-        print("Error invalide Key, value")
+        print("Error")
         return False
     return True
 
@@ -85,9 +91,3 @@ def pars_dict():
         return
     if check_dict(dictionaire):
         return dictionaire
-
-
-if __name__ == "__main__":
-    dictionaire = pars_dict()
-    if dictionaire:
-        print(dictionaire)
