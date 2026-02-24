@@ -248,16 +248,16 @@ class Maze:
         line = []
         for i in range(self.height):
             row = ""
-            hexa = 0
             for j in range(self.width):
                 cell = self.cells[i][j]
-                for direction in ['N', 'E', 'S', 'W']:
-                    row += '1' if cell[direction] else '0'
-                
-            while len(row) % 4 != 0:
-                row = '0' + row
-            hexa = format(int(row, 2), 'X')
-            line.append(hexa)
+                binaire = ""
+                binaire += '1' if cell['N'] else '0'
+                binaire += '1' if cell['E'] else '0'
+                binaire += '1' if cell['S'] else '0'
+                binaire += '1' if cell['W'] else '0'
+
+                row += format(int(binaire, 2), 'X')
+            line.append(row)
         return "\n".join(line)
 
 
