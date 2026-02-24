@@ -1,7 +1,7 @@
 PYTHON = python3
 FILE = config.txt
 
-all: name
+run: name
 
 name:
 	@$(PYTHON) genere_maze.py $(FILE)

@@ -7,6 +7,7 @@ import sys
 # j'ai pas non plus check les values pour les cles optionel.
 # par la suite j'ameliorerai le parsing avec des class et des blocks try execpte
 
+
 def is_valide(item):
     if item.count("=") != 1:
         return False

@@ -7,17 +7,71 @@ from parsing import pars_dict
 # j'ai implémnter l'algotithm de BFS (Breadth-First Search) pour le solver
 # la fonction display est generé par ia juste pour avoir un rendu
 
+
 class Maze:
     def __init__(self, width, height):
         self.width = width
         self.height = height
         self.cells = []
+        self.lst42 = []
         for i in range(height):
             ligne = []
             for j in range(width):
                 cellule = {'N': False, 'E': False, 'S': False, 'W': False, 'zone':1}
                 ligne.append(cellule)
             self.cells.append(ligne)
+
+    def place_42(self):
+        centre_i = self.height // 2
+        centre_j = self.width // 2
+
+        four = [
+            [1, 0, 0],
+            [1, 0, 0],
+            [1, 1, 1],
+            [0, 0, 1],
+            [0, 0, 1],
+        ]
+
+        two = [
+            [1, 1, 1],
+            [0, 0, 1],
+            [1, 1, 1],
+            [1, 0, 0],
+            [1, 1, 1],
+        ]
+
+        start_i = centre_i - 2
+        start_j = centre_j - 4
+
+        for di in range(len(four)):
+            for dj in range(len(four[0])):
+                if four[di][dj] == 1:
+                    i = start_i + di
+                    j = start_j + dj
+                    if 0 <= i < self.height and 0 <= j < self.width:
+                        self.lst42.append((i, j))
+        for di in range(len(two)):
+            for dj in range(len(two[0])):
+                if two[di][dj] == 1:
+                    i = start_i + di
+                    j = start_j + dj + 4
+                    if 0 <= i < self.height and 0 <= j < self.width:
+                        self.lst42.append((i, j))
+        print(self.lst42)
+
+    def display42(self):
+        for i in range(self.height):
+            line = ""
+            for j in range(self.width):
+                cell = self.cells[i][j]
+                if any([cell[dir] for dir in ['N', 'E', 'S', 'W']]):
+                    # line += " "
+                    pass
+                else:
+                    # line += "░"
+                    print(cell)
+            print(line)
 
     def display(self, print_zones=False):
         from math import floor
@@ -67,9 +121,19 @@ class Maze:
                         t+="\n" + interligne + "\n"
         print(t)
 
+    def is_protect(self, x, y):
+        for di in [-1, 0, 1]:
+            for dj in [-1, 0, 1]:
+                if (x+di, y+dj) in self.lst42:
+                    return True
+        return False
+
     def fusionner(self, i, j, dir):
         if not (0 <= i < self.height and 0 <= j < self.width):
             return False
+        if (i, j) in self.lst42:
+            return False
+
         cellule = self.cells[i][j]
         zone1 = int(cellule['zone'])
 
@@ -97,11 +161,15 @@ class Maze:
         if not (0 <= ni < self.height and 0 <= nj < self.width):
             return False
         
+        if (ni, nj) in self.lst42:
+            return False
+
         voisin = self.cells[ni][nj]
         zone2 = voisin['zone']
 
         if zone1 == zone2:
             return False
+        
         cellule[mur_cell] = True
         voisin[mur_voisin] = True
 
@@ -183,6 +251,22 @@ class Maze:
                 lst += direction
         return lst
 
+    def return_exa(self):
+        line = []
+        for i in range(self.height):
+            row = ""
+            hexa = 0
+            for j in range(self.width):
+                cell = self.cells[i][j]
+                for direction in ['N', 'E', 'S', 'W']:
+                    row += '1' if cell[direction] else '0'
+                
+            while len(row) % 4 != 0:
+                row = '0' + row
+            hexa = format(int(row, 2), 'X')
+            line.append(hexa)
+        return "\n".join(line)
+
 
 def config_maze(dictionaire):
     width = int(dictionaire["WIDTH"])
@@ -190,12 +274,15 @@ def config_maze(dictionaire):
     entry = dictionaire["ENTRY"]
     exit = dictionaire["EXIT"]
     grille = Maze(width, heigt)
+    grille.place_42()
     grille.generer()
+    grille.display42()
     grille.display()
     print(entry)
     print(exit)
     path = grille.solver(entry, exit)
     print(path)
+    print(grille.return_exa())
 
 
 if __name__ == "__main__":
