@@ -121,13 +121,6 @@ class Maze:
                         t+="\n" + interligne + "\n"
         print(t)
 
-    def is_protect(self, x, y):
-        for di in [-1, 0, 1]:
-            for dj in [-1, 0, 1]:
-                if (x+di, y+dj) in self.lst42:
-                    return True
-        return False
-
     def fusionner(self, i, j, dir):
         if not (0 <= i < self.height and 0 <= j < self.width):
             return False
@@ -268,11 +261,23 @@ class Maze:
         return "\n".join(line)
 
 
+def make_file(name, entry, exit, path, hexa):
+    try:
+        with open(name, "w") as f:
+            f.write(hexa + "\n\n")
+            f.write(entry + "\n")
+            f.write(exit + "\n")
+            f.write(path)
+    except IOError as e:
+        print(f"File cannot be opened : {e}")
+
+
 def config_maze(dictionaire):
     width = int(dictionaire["WIDTH"])
     heigt = int(dictionaire["HEIGHT"])
     entry = dictionaire["ENTRY"]
     exit = dictionaire["EXIT"]
+    name = dictionaire["OUTPUT_FILE"]
     grille = Maze(width, heigt)
     grille.place_42()
     grille.generer()
@@ -282,7 +287,9 @@ def config_maze(dictionaire):
     print(exit)
     path = grille.solver(entry, exit)
     print(path)
-    print(grille.return_exa())
+    hexa = grille.return_exa()
+    print()
+    make_file(name, entry, exit, path, hexa)
 
 
 if __name__ == "__main__":
