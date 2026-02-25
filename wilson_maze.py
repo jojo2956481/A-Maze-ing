@@ -22,9 +22,7 @@ class Maze:
                        end: tuple = None, visited=[]) -> Generator:
         if pos is None:
             pos = random.choice(self.empty)
-            self.empty.pop(self.empty.index(pos))
             end = random.choice(self.empty)
-            self.empty.pop(self.empty.index(end))
         visited.append(pos)
         neighboor = ["N", "E", "S", "W"]
         while neighboor != []:
@@ -34,9 +32,13 @@ class Maze:
                 new_pos = self.get_new_pos(pos, next)
                 self.open_wall(pos, new_pos, next)
                 if new_pos == end:
+                    visited.append(new_pos)
+                    for cell in visited:
+                        self.empty.pop(self.empty.index(cell))
                     yield "Finished"
                 yield from self.generate_first(new_pos, end, visited)
                 self.close_wall(pos, new_pos, next)
+                visited.pop(visited.index(new_pos))
 
     def generate_all_rest(self, pos: tuple = None, visited=[]) -> Generator:
         if pos is None:
