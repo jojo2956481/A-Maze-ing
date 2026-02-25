@@ -14,12 +14,83 @@ class Maze:
         self.height = height
         self.cells = []
         self.lst42 = []
+        self.lst_grille = []
         for i in range(height):
             ligne = []
             for j in range(width):
                 cellule = {'N': False, 'E': False, 'S': False, 'W': False, 'zone':1}
                 ligne.append(cellule)
             self.cells.append(ligne)
+
+    def execute_dfs(self, seed=None):
+        if seed is not None:
+            random.seed(seed)
+
+        i, j = self.start()
+        self.dfs_recursive(i, j)
+
+    def init_grille(self):
+        zone_id = 0
+        for i in range(self.height):
+            for j in range(self.width):
+                self.cells[i][j]['zone'] = zone_id
+                self.cells[i][j]['N'] = False
+                self.cells[i][j]['E'] = False
+                self.cells[i][j]['S'] = False
+                self.cells[i][j]['W'] = False
+                self.lst_grille.append((i, j))
+        
+
+    def start(self):
+        while True:
+            i, j = random.choice(self.lst_grille)
+            if (i, j) not in self.lst42:
+                self.cells[i][j]["zone"] = 1
+                return i, j
+  
+
+
+    def find_voisin(self, direction, i, j):
+
+        ni, nj = None, None
+        mur_cell, mur_voisin = None, None
+        if direction == 'N':
+            ni, nj = i - 1, j
+            mur_cell = 'N'
+            mur_voisin = 'S'
+        elif direction == 'S':
+            ni, nj = i + 1, j
+            mur_cell = 'S'
+            mur_voisin = 'N'
+        elif direction == 'E':
+            ni, nj = i, j + 1
+            mur_cell = 'E'
+            mur_voisin = 'W'
+        elif direction == 'W':
+            ni, nj = i, j - 1
+            mur_cell = 'W'
+            mur_voisin = 'E'
+
+        return ni, nj, mur_cell, mur_voisin
+
+    def dfs_recursive(self, i, j):
+        self.cells[i][j]["zone"] = 1
+
+        directions = ['N', 'E', 'S', 'W']
+        random.shuffle(directions)
+
+        for direction in directions:
+            ni, nj, mur_cell, mur_voisin = self.find_voisin(direction, i, j)
+
+            if not (0 <= ni < self.height and 0 <= nj < self.width):
+                continue
+            if (ni, nj) in self.lst42:
+                continue
+            if self.cells[ni][nj]["zone"] == 0:
+                self.cells[i][j][mur_cell] = True
+                self.cells[ni][nj][mur_voisin] = True
+                self.dfs_recursive(ni, nj)
+        
 
     def place_42(self):
         centre_i = self.height // 2
@@ -316,7 +387,7 @@ def mlx_display(maze: Maze) -> None:
 
 
 def config_maze(dictionaire):
-    print(dictionaire)
+    # print(dictionaire)
     width = int(dictionaire["WIDTH"])
     heigt = int(dictionaire["HEIGHT"])
     entry = dictionaire["ENTRY"]
@@ -325,19 +396,21 @@ def config_maze(dictionaire):
     if "SEED" in dictionaire:
         seed = int(dictionaire["SEED"])
     else:
-        seed = 0
+        seed = None
     grille = Maze(width, heigt)
+    grille.init_grille()
     grille.place_42()
-    grille.generer(seed)
-    grille.display42()
+    grille.execute_dfs(seed)
+    # grille.generer(seed)
+    # grille.display42()
     grille.display()
-    print(entry)
-    print(exit)
+    # print(entry)
+    # print(exit)
     path = grille.solver(entry, exit)
     print(path)
-    hexa = grille.return_exa()
-    print()
-    make_file(name, entry, exit, path, hexa)
+    # hexa = grille.return_exa()
+    # print()
+    # make_file(name, entry, exit, path, hexa)
 
 
 if __name__ == "__main__":
