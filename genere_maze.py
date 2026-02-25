@@ -163,6 +163,8 @@ class Maze:
         if zone1 == zone2:
             return False
         
+        print("Fusion:", (i,j), "->", (ni,nj), dir)
+
         cellule[mur_cell] = True
         voisin[mur_voisin] = True
 
