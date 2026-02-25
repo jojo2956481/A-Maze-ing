@@ -253,10 +253,10 @@ class Maze:
             for j in range(self.width):
                 cell = self.cells[i][j]
                 binaire = ""
-                binaire += '1' if cell['N'] else '0'
-                binaire += '1' if cell['E'] else '0'
-                binaire += '1' if cell['S'] else '0'
                 binaire += '1' if cell['W'] else '0'
+                binaire += '1' if cell['S'] else '0'
+                binaire += '1' if cell['E'] else '0'
+                binaire += '1' if cell['N'] else '0'
 
                 row += format(int(binaire, 2), 'X')
             line.append(row)
