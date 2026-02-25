@@ -2,6 +2,7 @@
 import random
 from collections import deque
 from parsing import pars_dict
+from mlx import Mlx
 
 # j'ai implementé l'algorithm de Kruskal pour generer le maze
 # j'ai implémnter l'algotithm de BFS (Breadth-First Search) pour le solver
@@ -351,32 +352,27 @@ def mlx_display(maze: Maze) -> None:
     m = Mlx()
     ptr = m.mlx_init()
     data = m.mlx_get_screen_size(ptr)
-    window = m.mlx_new_window(ptr, data[1], data[2], "Maze")
-    i = 0
-    j = 0
+    size = int(((data[1] / 2) / maze.width - 1) / 2)
+    window = m.mlx_new_window(ptr, int(size * maze.width + 20), int(size * maze.height + 20), "Maze")
+    i = 10
+    j = 10
     for line in maze.cells:
         for cell in line:
-            if cell["N"]:
-                m.mlx_pixel_put(ptr, window, i, j, 0xFFFFFFFF)
-                m.mlx_pixel_put(ptr, window, i + 1, j, 0xFFFFFFFF)
-                m.mlx_pixel_put(ptr, window, i + 2, j, 0xFFFFFFFF)
-            if cell["E"]:
-                m.mlx_pixel_put(ptr, window, i + 3, j, 0xFFFFFFFF)
-                m.mlx_pixel_put(ptr, window, i + 3, j + 1, 0xFFFFFFFF)
-                m.mlx_pixel_put(ptr, window, i + 3, j + 2, 0xFFFFFFFF)
-            if cell["S"]:
-                m.mlx_pixel_put(ptr, window, i, j + 3, 0xFFFFFFFF)
-                m.mlx_pixel_put(ptr, window, i + 1, j + 3, 0xFFFFFFFF)
-                m.mlx_pixel_put(ptr, window, i + 2, j + 3, 0xFFFFFFFF)
-            if cell["W"]:
-                m.mlx_pixel_put(ptr, window, i, j, 0xFFFFFFFF)
-                m.mlx_pixel_put(ptr, window, i, j + 1, 0xFFFFFFFF)
-                m.mlx_pixel_put(ptr, window, i, j + 2, 0xFFFFFFFF)
-            if (i * 3 > maze.width):
-                i = 0
-                j += 3
-            else:
-                i += 3
+            if not cell["N"]:
+                for n in range(size):
+                    m.mlx_pixel_put(ptr, window, i + n, j, 0xFFFFFFFF)
+            if not cell["E"]:
+                for n in range(size):
+                    m.mlx_pixel_put(ptr, window, i + size - 1, j + n, 0xFFFFFFFF)
+            if not cell["S"]:
+                for n in range(size):
+                    m.mlx_pixel_put(ptr, window, i + n, j + size - 1, 0xFFFFFFFF)
+            if not cell["W"]:
+                for n in range(size):
+                    m.mlx_pixel_put(ptr, window, i, j + n, 0xFFFFFFFF)
+            i += size
+        i = 10
+        j += size
 
     def gere_close(dummy):
         m.mlx_loop_exit(ptr)
@@ -409,8 +405,9 @@ def config_maze(dictionaire):
     path = grille.solver(entry, exit)
     print(path)
     # hexa = grille.return_exa()
-    # print()
+    print()
     # make_file(name, entry, exit, path, hexa)
+    # mlx_display(grille)
 
 
 if __name__ == "__main__":
