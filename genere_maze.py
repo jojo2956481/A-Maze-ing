@@ -274,6 +274,46 @@ def make_file(name, entry, exit, path, hexa):
         print(f"File cannot be opened : {e}")
 
 
+
+def mlx_display(maze: Maze) -> None:
+    m = Mlx()
+    ptr = m.mlx_init()
+    data = m.mlx_get_screen_size(ptr)
+    window = m.mlx_new_window(ptr, data[1], data[2], "Maze")
+    i = 0
+    j = 0
+    for line in maze.cells:
+        for cell in line:
+            if cell["N"]:
+                m.mlx_pixel_put(ptr, window, i, j, 0xFFFFFFFF)
+                m.mlx_pixel_put(ptr, window, i + 1, j, 0xFFFFFFFF)
+                m.mlx_pixel_put(ptr, window, i + 2, j, 0xFFFFFFFF)
+            if cell["E"]:
+                m.mlx_pixel_put(ptr, window, i + 3, j, 0xFFFFFFFF)
+                m.mlx_pixel_put(ptr, window, i + 3, j + 1, 0xFFFFFFFF)
+                m.mlx_pixel_put(ptr, window, i + 3, j + 2, 0xFFFFFFFF)
+            if cell["S"]:
+                m.mlx_pixel_put(ptr, window, i, j + 3, 0xFFFFFFFF)
+                m.mlx_pixel_put(ptr, window, i + 1, j + 3, 0xFFFFFFFF)
+                m.mlx_pixel_put(ptr, window, i + 2, j + 3, 0xFFFFFFFF)
+            if cell["W"]:
+                m.mlx_pixel_put(ptr, window, i, j, 0xFFFFFFFF)
+                m.mlx_pixel_put(ptr, window, i, j + 1, 0xFFFFFFFF)
+                m.mlx_pixel_put(ptr, window, i, j + 2, 0xFFFFFFFF)
+            if (i * 3 > maze.width):
+                i = 0
+                j += 3
+            else:
+                i += 3
+
+    def gere_close(dummy):
+        m.mlx_loop_exit(ptr)
+
+    m.mlx_mouse_hook(window, None, None)
+    m.mlx_hook(window, 33, 0, gere_close, None)
+    m.mlx_loop(ptr)
+
+
 def config_maze(dictionaire):
     width = int(dictionaire["WIDTH"])
     heigt = int(dictionaire["HEIGHT"])
