@@ -162,8 +162,6 @@ class Maze:
 
         if zone1 == zone2:
             return False
-        
-        print("Fusion:", (i,j), "->", (ni,nj), dir)
 
         cellule[mur_cell] = True
         voisin[mur_voisin] = True
@@ -174,7 +172,7 @@ class Maze:
                     self.cells[x][y]['zone'] = zone1
         return True
 
-    def generer(self):
+    def generer(self, seed=0):
         zone_id = 0
         for i in range(self.height):
             for j in range(self.width):
@@ -192,6 +190,9 @@ class Maze:
                     murs.append((i, j, 'E'))
                 if i < self.height - 1:
                     murs.append((i, j, 'S'))
+
+        if seed is not None:
+            random.seed(seed)
         random.shuffle(murs)
         for (i, j, direction) in murs:
             self.fusionner(i, j, direction)
@@ -315,14 +316,19 @@ def mlx_display(maze: Maze) -> None:
 
 
 def config_maze(dictionaire):
+    print(dictionaire)
     width = int(dictionaire["WIDTH"])
     heigt = int(dictionaire["HEIGHT"])
     entry = dictionaire["ENTRY"]
     exit = dictionaire["EXIT"]
     name = dictionaire["OUTPUT_FILE"]
+    if "SEED" in dictionaire:
+        seed = int(dictionaire["SEED"])
+    else:
+        seed = 0
     grille = Maze(width, heigt)
     grille.place_42()
-    grille.generer()
+    grille.generer(seed)
     grille.display42()
     grille.display()
     print(entry)

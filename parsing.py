@@ -14,7 +14,7 @@ def is_valide(item):
     name, value = item.split("=")
     if not name:
         return False
-    if name in ["WIDTH", "HEIGHT"]:
+    if name in ["WIDTH", "HEIGHT", "SEED"]:
         return value.isdigit()
     if name in ["ENTRY", "EXIT"]:
         parts = value.split(",")
