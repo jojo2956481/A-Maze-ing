@@ -2,7 +2,6 @@
 import random
 from collections import deque
 from parsing import pars_dict
-from mlx import Mlx
 
 # j'ai implementé l'algorithm de Kruskal pour generer le maze
 # j'ai implémnter l'algotithm de BFS (Breadth-First Search) pour le solver
@@ -75,22 +74,34 @@ class Maze:
         return ni, nj, mur_cell, mur_voisin
 
     def dfs_recursive(self, i, j):
+        stack = [(i, j)]
         self.cells[i][j]["zone"] = 1
 
-        directions = ['N', 'E', 'S', 'W']
-        random.shuffle(directions)
+        while stack:
+            i, j = stack[-1]
 
-        for direction in directions:
-            ni, nj, mur_cell, mur_voisin = self.find_voisin(direction, i, j)
+            directions = ['N', 'E', 'S', 'W']
+            random.shuffle(directions)
 
-            if not (0 <= ni < self.height and 0 <= nj < self.width):
-                continue
-            if (ni, nj) in self.lst42:
-                continue
-            if self.cells[ni][nj]["zone"] == 0:
-                self.cells[i][j][mur_cell] = True
-                self.cells[ni][nj][mur_voisin] = True
-                self.dfs_recursive(ni, nj)
+            moved = False
+            for direction in directions:
+                ni, nj, mur_cell, mur_voisin = self.find_voisin(direction, i, j)
+
+                if not (0 <= ni < self.height and 0 <= nj < self.width):
+                    continue
+                if (ni, nj) in self.lst42:
+                    continue
+                if self.cells[ni][nj]["zone"] == 0:
+                    self.cells[i][j][mur_cell] = True
+                    self.cells[ni][nj][mur_voisin] = True
+                    self.cells[ni][nj]["zone"] = 1
+                    
+                    stack.append((ni, nj))
+                    moved = True
+                    break
+            
+            if not moved:
+                stack.pop()
         
 
     def place_42(self):
