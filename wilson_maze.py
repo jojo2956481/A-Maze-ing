@@ -19,26 +19,41 @@ class Maze:
             self.maze.append(line)
 
     def generate_first(self, pos: tuple = None,
-                       end: tuple = None, visited=[]) -> Generator:
+                       end: tuple = None, visited=[],
+                       gen: Generator = None) -> Generator:
         if pos is None:
+            gen = self.count()
             pos = random.choice(self.empty)
             end = random.choice(self.empty)
+            print(pos, end)
+        count = next(gen)
+        refresh(self)
+        if count > 200:
+            self.maze = []
+            self.generate_empty()
+            yield from self.generate_first(None, None, [], None)
         visited.append(pos)
         neighboor = ["N", "E", "S", "W"]
         while neighboor != []:
-            next = random.choice(neighboor)
-            neighboor.pop(neighboor.index(next))
-            if (self.check_next_good(pos, visited, next)):
-                new_pos = self.get_new_pos(pos, next)
-                self.open_wall(pos, new_pos, next)
+            nexte = random.choice(neighboor)
+            neighboor.pop(neighboor.index(nexte))
+            if (self.check_next_good(pos, visited, nexte)):
+                new_pos = self.get_new_pos(pos, nexte)
+                self.open_wall(pos, new_pos, nexte)
                 if new_pos == end:
                     visited.append(new_pos)
                     for cell in visited:
                         self.empty.pop(self.empty.index(cell))
                     yield "Finished"
-                yield from self.generate_first(new_pos, end, visited)
-                self.close_wall(pos, new_pos, next)
+                yield from self.generate_first(new_pos, end, visited, gen)
+                self.close_wall(pos, new_pos, nexte)
                 visited.pop(visited.index(new_pos))
+
+    def count(self) -> Generator:
+        count = 0
+        while True:
+            count += 1
+            yield count
 
     def generate_all_rest(self, pos: tuple = None, visited=[]) -> Generator:
         if pos is None:
@@ -106,13 +121,9 @@ class Maze:
         return False
 
 
-def mlx_display(maze: Maze) -> None:
-    m = Mlx()
-    ptr = m.mlx_init()
-    data = m.mlx_get_screen_size(ptr)
+def refresh(maze: Maze):
+    m.mlx_clear_window(ptr, window)
     size = int(((data[1] / 2) / maze.width - 1) / 2)
-    window = m.mlx_new_window(ptr, int(size * maze.width + 20),
-                              int(size * maze.height + 20), "Maze")
     i = 10
     j = 10
     for line in maze.maze:
@@ -135,17 +146,30 @@ def mlx_display(maze: Maze) -> None:
         i = 10
         j += size
 
-    def gere_close(dummy):
-        m.mlx_loop_exit(ptr)
 
-    m.mlx_mouse_hook(window, None, None)
-    m.mlx_hook(window, 33, 0, gere_close, None)
-    m.mlx_loop(ptr)
+def mlx_display(maze: Maze) -> None:
+    m = Mlx()
+    ptr = m.mlx_init()
+    data = m.mlx_get_screen_size(ptr)
+    size = int(((data[1] / 2) / maze.width - 1) / 2)
+    window = m.mlx_new_window(ptr, int(size * maze.width + 20),
+                              int(size * maze.height + 20), "Maze")
+    return data, window, ptr, m
+
+
+def gere_close(dummy):
+    m.mlx_loop_exit(ptr)
+
+
+def closing(keycode, params):
+    if keycode == 113:
+        m.mlx_loop_exit(ptr)
 
 
 if __name__ == "__main__":
     maze = Maze(20, 15)
     maze.generate_empty()
+    data, window, ptr, m = mlx_display(maze)
     gen = maze.generate_first()
     next(gen)
     gen = maze.generate_all_rest()
@@ -153,4 +177,8 @@ if __name__ == "__main__":
     while temp != "Finished":
         gen = maze.generate_all_rest()
         temp = next(gen)
-    mlx_display(maze)
+
+    refresh(maze)
+    m.mlx_key_hook(window, closing, None)
+    m.mlx_hook(window, 33, 0, gere_close, None)
+    m.mlx_loop(ptr)

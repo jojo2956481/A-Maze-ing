@@ -5,9 +5,21 @@ def mymouse():
     pass
 
 
-def mykey(keynum, mystuff):
-    if keynum == 32:
-        m.mlx_mouse_hook(window, None, None)
+def mykey(keynum, param):
+    if keynum == 113:
+        m.mlx_clear_window(ptr, window)
+        print_fra()
+
+
+def print_fra():
+    for i in range(400):
+        for j in range(400):
+            if i >= 280:
+                m.mlx_pixel_put(ptr, window, i, j, 0xF05E1706)
+            elif i <= 120:
+                m.mlx_pixel_put(ptr, window, i, j, 0xF01900A6)
+            else:
+                m.mlx_pixel_put(ptr, window, i, j, 0xF0FFFFFF)
 
 
 def gere_close(dummy):
@@ -28,6 +40,7 @@ for i in range(400):
         else:
             m.mlx_pixel_put(ptr, window, i, j, 0xF0FFFFFF)
 
-m.mlx_mouse_hook(window, None, None)
+
+m.mlx_key_hook(window, mykey, None)
 m.mlx_hook(window, 33, 0, gere_close, None)
 m.mlx_loop(ptr)
