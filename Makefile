@@ -21,3 +21,5 @@ name:
 
 clean:
 	rm -f *.pyc __pycache__/*
+	rm maze.txt
+	rm -rf .venv
