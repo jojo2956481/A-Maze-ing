@@ -17,7 +17,7 @@ lint-strict:
 	python3 -m mypy . --strict
 
 name:
-	@$(PYTHON) genere_maze.py $(FILE)
+	@$(PYTHON) algo/genere_maze.py $(FILE)
 
 clean:
 	rm -f *.pyc __pycache__/*

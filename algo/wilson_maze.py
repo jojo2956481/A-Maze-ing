@@ -22,16 +22,13 @@ class Maze:
                        end: tuple = None, visited=[],
                        gen: Generator = None) -> Generator:
         if pos is None:
+            visited = []
             gen = self.count()
             pos = random.choice(self.empty)
             end = random.choice(self.empty)
-            print(pos, end)
         count = next(gen)
-        refresh(self)
-        if count > 200:
-            self.maze = []
-            self.generate_empty()
-            yield from self.generate_first(None, None, [], None)
+        if count > 1000:
+            yield "Not found"
         visited.append(pos)
         neighboor = ["N", "E", "S", "W"]
         while neighboor != []:
@@ -39,14 +36,13 @@ class Maze:
             neighboor.pop(neighboor.index(nexte))
             if (self.check_next_good(pos, visited, nexte)):
                 new_pos = self.get_new_pos(pos, nexte)
-                self.open_wall(pos, new_pos, nexte)
                 if new_pos == end:
                     visited.append(new_pos)
                     for cell in visited:
                         self.empty.pop(self.empty.index(cell))
+                    self.open_wall(visited)
                     yield "Finished"
                 yield from self.generate_first(new_pos, end, visited, gen)
-                self.close_wall(pos, new_pos, nexte)
                 visited.pop(visited.index(new_pos))
 
     def count(self) -> Generator:
@@ -55,29 +51,32 @@ class Maze:
             count += 1
             yield count
 
-    def generate_all_rest(self, pos: tuple = None, visited=[]) -> Generator:
+    def generate_all_rest(self, pos: tuple = None, visited=[],
+                          gen: Generator = None) -> Generator:
         if pos is None:
             if self.empty == []:
                 yield "Finished"
             visited = []
+            gen = self.count()
             pos = random.choice(self.empty)
-            visited.append(pos)
+        visited.append(pos)
+        count = next(gen)
         neighboor = ["N", "E", "S", "W"]
+        if count > 1000:
+            yield "Not found"
         while neighboor != []:
-            next = random.choice(neighboor)
-            neighboor.pop(neighboor.index(next))
-            if (self.check_next_good(pos, visited, next)):
-                new_pos = self.get_new_pos(pos, next)
+            nexte = random.choice(neighboor)
+            neighboor.pop(neighboor.index(nexte))
+            if (self.check_next_good(pos, visited, nexte)):
+                new_pos = self.get_new_pos(pos, nexte)
                 if self.is_in_maze(new_pos):
-                    self.open_wall(pos, new_pos, next)
+                    visited.append(new_pos)
+                    self.open_wall(visited)
+                    visited.pop(-1)
                     for cell in visited:
                         self.empty.pop(self.empty.index(cell))
                     yield "Continuing"
-                visited.append(new_pos)
-                self.open_wall(pos, new_pos, next)
-                yield from self.generate_all_rest(new_pos, visited)
-                self.close_wall(pos, new_pos, next)
-                visited.pop(visited.index(new_pos))
+                yield from self.generate_all_rest(new_pos, visited, gen)
         if self.empty == []:
             yield "Finished"
 
@@ -92,17 +91,31 @@ class Maze:
             new_pos = (pos[0], pos[1] - 1)
         return new_pos
 
-    def open_wall(self, pos, new_pos, next) -> None:
-        neighboor = ["N", "E", "S", "W"]
-        prev = (neighboor.index(next) + 2) % 4
-        self.maze[pos[0]][pos[1]][next] = True
-        self.maze[new_pos[0]][new_pos[1]][neighboor[prev]] = True
+    def open_wall(self, visited) -> None:
+        for i in range(len(visited) - 1):
+            if visited[i][0] - visited[i + 1][0] == 1:
+                direction = "N"
+            elif visited[i][1] - visited[i + 1][1] == -1:
+                direction = "E"
+            elif visited[i][0] - visited[i + 1][0] == -1:
+                direction = "S"
+            else:
+                direction = "W"
+            self.open_neighnbor(visited[i], direction)
 
-    def close_wall(self, pos, new_pos, next):
-        neighboor = ["N", "E", "S", "W"]
-        prev = (neighboor.index(next) + 2) % 4
-        self.maze[pos[0]][pos[1]][next] = False
-        self.maze[new_pos[0]][new_pos[1]][neighboor[prev]] = False
+    def open_neighnbor(self, cell: tuple, direction: str) -> None:
+        if direction == "N":
+            self.maze[cell[0]][cell[1]]["N"] = True
+            self.maze[cell[0] - 1][cell[1]]["S"] = True
+        elif direction == "E":
+            self.maze[cell[0]][cell[1]]["E"] = True
+            self.maze[cell[0]][cell[1] + 1]["W"] = True
+        elif direction == "S":
+            self.maze[cell[0]][cell[1]]["S"] = True
+            self.maze[cell[0] + 1][cell[1]]["N"] = True
+        else:
+            self.maze[cell[0]][cell[1]]["W"] = True
+            self.maze[cell[0]][cell[1] - 1]["E"] = True
 
     def check_next_good(self, pos, visited, next) -> bool:
         new_pos = self.get_new_pos(pos, next)
@@ -114,10 +127,8 @@ class Maze:
         return True
 
     def is_in_maze(self, pos) -> bool:
-        walls = self.maze[pos[0]][pos[1]]
-        for wall in walls.values():
-            if wall:
-                return True
+        if pos not in self.empty:
+            return True
         return False
 
 
@@ -167,17 +178,18 @@ def closing(keycode, params):
 
 
 if __name__ == "__main__":
-    maze = Maze(20, 15)
+    maze = Maze(20, 20)
     maze.generate_empty()
     data, window, ptr, m = mlx_display(maze)
     gen = maze.generate_first()
-    next(gen)
+    temp = next(gen)
+    while (temp != "Finished"):
+        gen = maze.generate_first()
     gen = maze.generate_all_rest()
     temp = next(gen)
     while temp != "Finished":
         gen = maze.generate_all_rest()
         temp = next(gen)
-
     refresh(maze)
     m.mlx_key_hook(window, closing, None)
     m.mlx_hook(window, 33, 0, gere_close, None)

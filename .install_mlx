@@ -18,7 +18,7 @@ _ROOT_PROJECT_DIR = $(pwd)
 
 echo "Download and decompress minilibx sources.."
 cd $TEMP_DIR
-wget https://cdn.intra.42.fr/document/document/43952/mlx_CLXV-2.2.tgz
+wget https://cdn.intra.42.fr/document/document/46950/mlx_CLXV-2.2.tgz
 tar xvf mlx_CLXV-2.2.tgz
 
 echo "Download and decompress xcb-keysyms.."
