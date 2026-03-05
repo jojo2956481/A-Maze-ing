@@ -77,8 +77,7 @@ class Maze:
                         self.empty.pop(self.empty.index(cell))
                     yield "Continuing"
                 yield from self.generate_all_rest(new_pos, visited, gen)
-        if self.empty == []:
-            yield "Finished"
+                visited.pop(visited.index(new_pos))
 
     def get_new_pos(self, pos, next):
         if (next == "N"):
@@ -134,7 +133,7 @@ class Maze:
 
 def refresh(maze: Maze):
     m.mlx_clear_window(ptr, window)
-    size = int(((data[1] / 2) / maze.width - 1) / 2)
+    size = int(((data[1] / 2) / maze.width - 1) / 1)
     i = 10
     j = 10
     for line in maze.maze:
@@ -162,7 +161,7 @@ def mlx_display(maze: Maze) -> None:
     m = Mlx()
     ptr = m.mlx_init()
     data = m.mlx_get_screen_size(ptr)
-    size = int(((data[1] / 2) / maze.width - 1) / 2)
+    size = int(((data[1] / 2) / maze.width - 1) / 1)
     window = m.mlx_new_window(ptr, int(size * maze.width + 20),
                               int(size * maze.height + 20), "Maze")
     return data, window, ptr, m
@@ -178,13 +177,14 @@ def closing(keycode, params):
 
 
 if __name__ == "__main__":
-    maze = Maze(20, 20)
+    maze = Maze(20, 15)
     maze.generate_empty()
     data, window, ptr, m = mlx_display(maze)
     gen = maze.generate_first()
     temp = next(gen)
     while (temp != "Finished"):
         gen = maze.generate_first()
+        temp = next(gen)
     gen = maze.generate_all_rest()
     temp = next(gen)
     while temp != "Finished":
