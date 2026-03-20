@@ -1,46 +1,23 @@
 from mlx import Mlx
+import numpy
 
 
-def mymouse():
-    pass
+def close_by_button(keycode, params):
+    if keycode == 113:
+        m.mlx_loop_exit(ptr)
 
 
-def mykey(keynum, param):
-    if keynum == 113:
-        m.mlx_clear_window(ptr, window)
-        print_fra()
-
-
-def print_fra():
-    for i in range(400):
-        for j in range(400):
-            if i >= 280:
-                m.mlx_pixel_put(ptr, window, i, j, 0xF05E1706)
-            elif i <= 120:
-                m.mlx_pixel_put(ptr, window, i, j, 0xF01900A6)
-            else:
-                m.mlx_pixel_put(ptr, window, i, j, 0xF0FFFFFF)
-
-
-def gere_close(dummy):
+def close_window(params):
     m.mlx_loop_exit(ptr)
 
 
 m = Mlx()
 ptr = m.mlx_init()
 window = m.mlx_new_window(ptr, 400, 400, "ok")
-m.mlx_string_put(ptr, window, 20, 20, 255, "Hello PyMlx!")
-m.mlx_string_put(ptr, window, 40, 40, 255, "Yeah")
-for i in range(400):
-    for j in range(400):
-        if i >= 280:
-            m.mlx_pixel_put(ptr, window, i, j, 0xF05E1706)
-        elif i <= 120:
-            m.mlx_pixel_put(ptr, window, i, j, 0xF01900A6)
-        else:
-            m.mlx_pixel_put(ptr, window, i, j, 0xF0FFFFFF)
-
-
-m.mlx_key_hook(window, mykey, None)
-m.mlx_hook(window, 33, 0, gere_close, None)
+image = m.mlx_new_image(ptr, 400, 400)
+print(m.mlx_get_data_addr(image))
+m.mlx_put_image_to_window(ptr, window, image, 0, 0)
+m.mlx_key_hook(window, close_by_button, None)
+m.mlx_hook(window, 33, 0, close_window, None)
 m.mlx_loop(ptr)
+tab = numpy.array([1, 2, 3])

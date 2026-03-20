@@ -5,7 +5,7 @@ import sys
 # le parsing est complet, juste je check pas name du fichier .txt
 # je regarde juste ca se termine bien par .txt
 # j'ai pas non plus check les values pour les cles optionel.
-# par la suite j'ameliorerai le parsing avec des class et des blocks try execpte
+# par la suite j'ameliorerai le parsing avec des class et des blocks try execpt
 
 
 def is_valide(item):

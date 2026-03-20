@@ -133,7 +133,7 @@ class Maze:
 
 def refresh(maze: Maze):
     m.mlx_clear_window(ptr, window)
-    size = int(((data[1] / 2) / maze.width - 1) / 1)
+    size = int(((data[1] / 2) / maze.width - 1) / 2)
     i = 10
     j = 10
     for line in maze.maze:
@@ -161,7 +161,7 @@ def mlx_display(maze: Maze) -> None:
     m = Mlx()
     ptr = m.mlx_init()
     data = m.mlx_get_screen_size(ptr)
-    size = int(((data[1] / 2) / maze.width - 1) / 1)
+    size = int(((data[1] / 2) / maze.width - 1) / 2)
     window = m.mlx_new_window(ptr, int(size * maze.width + 20),
                               int(size * maze.height + 20), "Maze")
     return data, window, ptr, m
@@ -177,7 +177,7 @@ def closing(keycode, params):
 
 
 if __name__ == "__main__":
-    maze = Maze(20, 15)
+    maze = Maze(20, 20)
     maze.generate_empty()
     data, window, ptr, m = mlx_display(maze)
     gen = maze.generate_first()

@@ -6,7 +6,8 @@ run: name
 install:
 	python3 -m pip install flake8
 	python3 -m pip install mypy
-	./.install_mlx
+	pip install numpy
+	pip install mlx-2.2-py3-none-any.whl
 
 lint:
 	python3 -m flake8 .

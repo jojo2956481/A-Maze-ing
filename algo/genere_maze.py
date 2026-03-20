@@ -39,7 +39,6 @@ class Maze:
                 self.cells[i][j]['S'] = False
                 self.cells[i][j]['W'] = False
                 self.lst_grille.append((i, j))
-        
 
     def start(self):
         while True:
