@@ -11,6 +11,47 @@ class Maze:
                      for _ in range(self.height)]
         self.empty = {(i, j) for j in range(self.width)
                       for i in range(self.height)}
+        self.forty_two = []
+        self.get_forty_two()
+        self.empty = self.empty.difference(set(self.forty_two))
+
+    def get_forty_two(self):
+        centre_i = self.height // 2
+        centre_j = self.width // 2
+
+        four = [
+            [1, 0, 0],
+            [1, 0, 0],
+            [1, 1, 1],
+            [0, 0, 1],
+            [0, 0, 1],
+        ]
+
+        two = [
+            [1, 1, 1],
+            [0, 0, 1],
+            [1, 1, 1],
+            [1, 0, 0],
+            [1, 1, 1],
+        ]
+
+        start_i = centre_i - 2
+        start_j = centre_j - 4
+
+        for di in range(len(four)):
+            for dj in range(len(four[0])):
+                if four[di][dj] == 1:
+                    i = start_i + di
+                    j = start_j + dj
+                    if 0 <= i < self.height and 0 <= j < self.width:
+                        self.forty_two.append((i, j))
+        for di in range(len(two)):
+            for dj in range(len(two[0])):
+                if two[di][dj] == 1:
+                    i = start_i + di
+                    j = start_j + dj + 4
+                    if 0 <= i < self.height and 0 <= j < self.width:
+                        self.forty_two.append((i, j))
 
     def generate_empty(self) -> None:
         self.maze = [[{"N": False, "E": False, "S": False, "W": False}
@@ -38,7 +79,6 @@ class Maze:
                 self.empty = self.empty.difference(set(visited))
                 self.open_wall(visited)
                 return visited
-
 
     def generate_all_rest(self) -> list:
         pos = random.choice(list(self.empty))
@@ -104,6 +144,8 @@ class Maze:
         if (new_pos[0] >= self.height or new_pos[0] < 0 or
                 new_pos[1] >= self.width or new_pos[1] < 0):
             return False
+        if new_pos in self.forty_two:
+            return False
         return True
 
     def is_in_maze(self, pos) -> bool:
@@ -114,7 +156,7 @@ class Maze:
 
 def refresh(maze: Maze):
     m.mlx_clear_window(ptr, window)
-    size = int(((data[1] / 2) / maze.width - 1) / 1)
+    size = int(((data[1] / 2) / maze.width - 1) / 2)
     i = 10
     j = 10
     for line in maze.maze:
@@ -136,13 +178,18 @@ def refresh(maze: Maze):
             i += size
         i = 10
         j += size
+    for cell in maze.forty_two:
+        for i in range(size):
+            for z in range(size):
+                m.mlx_pixel_put(ptr, window, cell[1] * size + 10 + z,
+                                cell[0] * size + 10 + i, 0xFFFFFFFF)
 
 
 def mlx_display(maze: Maze) -> None:
     m = Mlx()
     ptr = m.mlx_init()
     data = m.mlx_get_screen_size(ptr)
-    size = int(((data[1] / 2) / maze.width - 1) / 1)
+    size = int(((data[1] / 2) / maze.width - 1) / 2)
     window = m.mlx_new_window(ptr, int(size * maze.width + 20),
                               int(size * maze.height + 20), "Maze")
     return data, window, ptr, m
