@@ -13,8 +13,7 @@ def close_window(params):
 
 def create_image(data):
     for i in range(len(list(data))):
-        int(data[i])
-        data[i] += 120
+        data[i] = 0b1100001100110011
 
 
 m = Mlx()
@@ -22,7 +21,7 @@ ptr = m.mlx_init()
 window = m.mlx_new_window(ptr, 400, 400, "ok")
 image = m.mlx_new_image(ptr, 400, 1000)
 data = m.mlx_get_data_addr(image)
-data = create_image(data)
+data = create_image(data[0])
 m.mlx_put_image_to_window(ptr, window, image, 0, 0)
 m.mlx_key_hook(window, close_by_button, None)
 m.mlx_hook(window, 33, 0, close_window, None)
