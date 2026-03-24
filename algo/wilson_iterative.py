@@ -206,7 +206,7 @@ def closing(keycode, params):
 
 if __name__ == "__main__":
     from time import time
-    maze = Maze(200, 200)
+    maze = Maze(50, 50)
     maze.generate_empty()
     data, window, ptr, m = mlx_display(maze)
     start = time()
