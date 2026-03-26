@@ -1,9 +1,8 @@
 import random
-from mlx import Mlx
 
 
 class Maze:
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int) -> None:
         self.width: int = width
         self.height: int = height
         self.maze = [[{"N": False, "E": False, "S": False, "W": False}
@@ -15,7 +14,12 @@ class Maze:
         self.get_forty_two()
         self.empty = self.empty.difference(set(self.forty_two))
 
-    def get_forty_two(self):
+    def generate_maze(self) -> None:
+        self.generate_first()
+        while self.empty:
+            self.generate_all_rest()
+
+    def get_forty_two(self) -> None:
         centre_i = self.height // 2
         centre_j = self.width // 2
 
@@ -152,71 +156,3 @@ class Maze:
         if pos not in self.empty:
             return True
         return False
-
-
-def refresh(maze: Maze):
-    m.mlx_clear_window(ptr, window)
-    size = int(((data[1] / 2) / maze.width - 1) / 2)
-    i = 10
-    j = 10
-    for line in maze.maze:
-        for cell in line:
-            if not cell["N"]:
-                for n in range(size):
-                    m.mlx_pixel_put(ptr, window, i + n, j, 0xFFFFFFFF)
-            if not cell["E"]:
-                for n in range(size):
-                    m.mlx_pixel_put(ptr, window, i + size - 1,
-                                    j + n, 0xFFFFFFFF)
-            if not cell["S"]:
-                for n in range(size):
-                    m.mlx_pixel_put(ptr, window, i + n,
-                                    j + size - 1, 0xFFFFFFFF)
-            if not cell["W"]:
-                for n in range(size):
-                    m.mlx_pixel_put(ptr, window, i, j + n, 0xFFFFFFFF)
-            i += size
-        i = 10
-        j += size
-    for cell in maze.forty_two:
-        for i in range(size):
-            for z in range(size):
-                m.mlx_pixel_put(ptr, window, cell[1] * size + 10 + z,
-                                cell[0] * size + 10 + i, 0xFFFFFFFF)
-
-
-def mlx_display(maze: Maze) -> None:
-    m = Mlx()
-    ptr = m.mlx_init()
-    data = m.mlx_get_screen_size(ptr)
-    size = int(((data[1] / 2) / maze.width - 1) / 2)
-    window = m.mlx_new_window(ptr, int(size * maze.width + 20),
-                              int(size * maze.height + 20), "Maze")
-    return data, window, ptr, m
-
-
-def gere_close(dummy):
-    m.mlx_loop_exit(ptr)
-
-
-def closing(keycode, params):
-    if keycode == 113:
-        m.mlx_loop_exit(ptr)
-
-
-if __name__ == "__main__":
-    from time import time
-    maze = Maze(50, 50)
-    maze.generate_empty()
-    data, window, ptr, m = mlx_display(maze)
-    start = time()
-    maze.generate_first()
-    print(f"First part: {time() - start}s")
-    start = time()
-    while maze.empty:
-        maze.generate_all_rest()
-    print(f"Second part: {time() - start}s")
-    refresh(maze)
-    m.mlx_key_hook(window, closing, None)
-    m.mlx_hook(window, 33, 0, gere_close, None)
-    m.mlx_loop(ptr)

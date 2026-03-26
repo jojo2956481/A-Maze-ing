@@ -17,6 +17,9 @@ lint-strict:
 	python3 -m flake8 .
 	python3 -m mypy . --strict
 
+build: 
+	
+
 name:
 	@$(PYTHON) algo/genere_maze.py $(FILE)
 
