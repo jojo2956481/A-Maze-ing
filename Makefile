@@ -6,7 +6,6 @@ run: name
 install:
 	python3 -m pip install flake8
 	python3 -m pip install mypy
-	pip install numpy
 	pip install mlx-2.2-py3-none-any.whl
 
 lint:
@@ -18,10 +17,10 @@ lint-strict:
 	python3 -m mypy . --strict
 
 build: 
-	
+	pip install poetry && poetry build srcs .
 
 name:
-	@$(PYTHON) algo/genere_maze.py $(FILE)
+	@$(PYTHON) srcs/main.py $(FILE)
 
 clean:
 	rm -f *.pyc __pycache__/*

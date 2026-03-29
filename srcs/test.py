@@ -3,6 +3,7 @@ import numpy
 
 
 def close_by_button(keycode, params):
+    print(keycode)
     if keycode == 113:
         m.mlx_loop_exit(ptr)
 
@@ -28,7 +29,8 @@ image = m.mlx_new_image(ptr, 400, 400)
 data = m.mlx_get_data_addr(image)
 print(data)
 data = create_image(data[0])
-m.mlx_put_image_to_window(ptr, window, image, 0, 0)
+# m.mlx_put_image_to_window(ptr, window, image, 0, 0)
+m.mlx_string_put(ptr, window, 10, 10, 0xFFFF00FF, "A-maze-ing")
 m.mlx_key_hook(window, close_by_button, None)
 m.mlx_hook(window, 33, 0, close_window, None)
 m.mlx_loop(ptr)

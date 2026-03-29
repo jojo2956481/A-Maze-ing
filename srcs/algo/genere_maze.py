@@ -1,7 +1,7 @@
 
 import random
 from collections import deque
-from parsing import pars_dict
+from parsing.parsing import pars_dict
 
 # j'ai implementé l'algorithm de Kruskal pour generer le maze
 # j'ai implémnter l'algotithm de BFS (Breadth-First Search) pour le solver
@@ -12,15 +12,16 @@ class Maze:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.cells = []
-        self.lst42 = []
+        self.maze = []
+        self.forty_two = []
         self.lst_grille = []
         for i in range(height):
             ligne = []
             for j in range(width):
-                cellule = {'N': False, 'E': False, 'S': False, 'W': False, 'zone':1}
+                cellule = {'N': False, 'E': False, 'S': False,
+                           'W': False, 'zone': 1}
                 ligne.append(cellule)
-            self.cells.append(ligne)
+            self.maze.append(ligne)
 
     def execute_dfs(self, seed=None):
         if seed is not None:
@@ -33,21 +34,19 @@ class Maze:
         zone_id = 0
         for i in range(self.height):
             for j in range(self.width):
-                self.cells[i][j]['zone'] = zone_id
-                self.cells[i][j]['N'] = False
-                self.cells[i][j]['E'] = False
-                self.cells[i][j]['S'] = False
-                self.cells[i][j]['W'] = False
+                self.maze[i][j]['zone'] = zone_id
+                self.maze[i][j]['N'] = False
+                self.maze[i][j]['E'] = False
+                self.maze[i][j]['S'] = False
+                self.maze[i][j]['W'] = False
                 self.lst_grille.append((i, j))
 
     def start(self):
         while True:
             i, j = random.choice(self.lst_grille)
-            if (i, j) not in self.lst42:
-                self.cells[i][j]["zone"] = 1
+            if (i, j) not in self.forty_two:
+                self.maze[i][j]["zone"] = 1
                 return i, j
-  
-
 
     def find_voisin(self, direction, i, j):
 
@@ -74,7 +73,7 @@ class Maze:
 
     def dfs_recursive(self, i, j):
         stack = [(i, j)]
-        self.cells[i][j]["zone"] = 1
+        self.maze[i][j]["zone"] = 1
 
         while stack:
             i, j = stack[-1]
@@ -84,24 +83,24 @@ class Maze:
 
             moved = False
             for direction in directions:
-                ni, nj, mur_cell, mur_voisin = self.find_voisin(direction, i, j)
+                ni, nj, mur_cell, mur_voisin = self.find_voisin(direction,
+                                                                i, j)
 
                 if not (0 <= ni < self.height and 0 <= nj < self.width):
                     continue
-                if (ni, nj) in self.lst42:
+                if (ni, nj) in self.forty_two:
                     continue
-                if self.cells[ni][nj]["zone"] == 0:
-                    self.cells[i][j][mur_cell] = True
-                    self.cells[ni][nj][mur_voisin] = True
-                    self.cells[ni][nj]["zone"] = 1
-                    
+                if self.maze[ni][nj]["zone"] == 0:
+                    self.maze[i][j][mur_cell] = True
+                    self.maze[ni][nj][mur_voisin] = True
+                    self.maze[ni][nj]["zone"] = 1
+
                     stack.append((ni, nj))
                     moved = True
                     break
-            
+
             if not moved:
                 stack.pop()
-        
 
     def place_42(self):
         centre_i = self.height // 2
@@ -132,21 +131,20 @@ class Maze:
                     i = start_i + di
                     j = start_j + dj
                     if 0 <= i < self.height and 0 <= j < self.width:
-                        self.lst42.append((i, j))
+                        self.forty_two.append((i, j))
         for di in range(len(two)):
             for dj in range(len(two[0])):
                 if two[di][dj] == 1:
                     i = start_i + di
                     j = start_j + dj + 4
                     if 0 <= i < self.height and 0 <= j < self.width:
-                        self.lst42.append((i, j))
-        print(self.lst42)
+                        self.forty_two.append((i, j))
 
     def display42(self):
         for i in range(self.height):
             line = ""
             for j in range(self.width):
-                cell = self.cells[i][j]
+                cell = self.maze[i][j]
                 if any([cell[dir] for dir in ['N', 'E', 'S', 'W']]):
                     # line += " "
                     pass
@@ -155,61 +153,69 @@ class Maze:
                     print(cell)
             print(line)
 
-    def display(self, print_zones=False):
-        from math import floor
-        #alias :
-        w=self.width;h=self.height;c=self.cells;
-        #si on imprime les zones, il faut élargir la taille des couloirs
-        if(print_zones):
-            len_zone=max([ max([ len(str(self.cells[i][j]['zone'])) for i in range(self.height) ]) for j in range(laby.width) ])+1
-        inters=[' ','╴','╷', '┐','╶','─','┌','┬','╵','┘','│','┤','└','┴','├','┼']
-        t=""
-        #la grille des intersections de cases est de taille (N+1)(M+1)
-        for i in range(h+1):
-            interligne=""
-            for j in range(w+1):
-                #up, right, bottom, left : les 4 parties de la croix "┼" #False = mur, True = pas mur
-                #Coins et bords:
-                up=False if i==0 else None
-                left=False if j==0 else None
-                right=False if j==w else None
-                bottom=False if i==h else None
-                if j==w:
-                    if up==None:up=not c[i-1][j-1]['E']
-                    if bottom==None:bottom=not c[i][j-1]['E']
-                if i==h:
-                    bottom=False
-                    if right==None:right=not c[i-1][j]['S']
-                    if left==None:left=not c[i-1][j-1]['S']
-                #intérieur :
-                if up==None:up=not c[i-1][j]['W']
-                if right==None:right=not c[i][j]['N']
-                if bottom==None:bottom=not c[i][j]['W']
-                if left==None:left=not c[i][j-1]['N']
-                #-> mot binaire à 4 bits. 16 cas qu'on a mis dans l'ordre dans la liste inters
-                #indice inters
-                k=-up*8+right*4+bottom*2+left
-                if not print_zones:
-                    #espacement horizontal supplémentaire
-                    sep= "─" if left else " "
-                    t+=sep+inters[k]
-                    if j==self.width:t+="\n"
-                else:
-                    sep= (len_zone+2)*"─" if right else (len_zone+2)*" "
-                        #num_zone=self.zones[self.cells[i][j]["zone"]] if i -1 and num_zone <10  else "*"
-                    interligne+=("│" if bottom else " ")+" "*(len_sp_left+1)+txt_num_zone+" "*(len_sp_right+1)
-                    t+=inters[k]+sep
-                    if j==self.width:
-                        t+="\n" + interligne + "\n"
-        print(t)
+    # def display(self, print_zones=False):
+    #     from math import floor
+    #     #alias :
+    #     w=self.width;h=self.height;c=self.maze;
+    #     #si on imprime les zones, il faut élargir la taille des couloirs
+    #     if (print_zones):
+    #         len_zone = max([max([len(str(self.maze[i][j]['zone']))
+    #                             for i in range(self.height)])
+    #                         for j in range(laby.width)])+1
+    #     inters = [' ', '╴', '╷', '┐', '╶', '─', '┌', '┬', '╵', '┘',
+    #               '│', '┤', '└', '┴', '├', '┼']
+    #     t=""
+    #     #la grille des intersections de cases est de taille (N+1)(M+1)
+    #     for i in range(h+1):
+    #         interligne=""
+    #         for j in range(w+1):
+    #             #up, right, bottom, left : les 4 parties de la croix
+    #             # "┼" #False = mur, True = pas mur
+    #             #Coins et bords:
+    #             up=False if i==0 else None
+    #             left=False if j==0 else None
+    #             right=False if j==w else None
+    #             bottom=False if i==h else None
+    #             if j==w:
+    #                 if up==None:up=not c[i-1][j-1]['E']
+    #                 if bottom==None:bottom=not c[i][j-1]['E']
+    #             if i==h:
+    #                 bottom=False
+    #                 if right==None:right=not c[i-1][j]['S']
+    #                 if left==None:left=not c[i-1][j-1]['S']
+    #             #intérieur :
+    #             if up==None:up=not c[i-1][j]['W']
+    #             if right==None:right=not c[i][j]['N']
+    #             if bottom==None:bottom=not c[i][j]['W']
+    #             if left==None:left=not c[i][j-1]['N']
+    #             # -> mot binaire à 4 bits. 16 cas qu'on a mis dans
+    #             # l'ordre dans la liste inters
+    #             # indice inters
+    #             k=-up*8+right*4+bottom*2+left
+    #             if not print_zones:
+    #                 #espacement horizontal supplémentaire
+    #                 sep= "─" if left else " "
+    #                 t+=sep+inters[k]
+    #                 if j==self.width:t+="\n"
+    #             else:
+    #                 sep= (len_zone+2)*"─" if right else (len_zone+2)*" "
+    #                     # num_zone=self.zones[self.maze[i][j]["zone"]]
+    #                     # if i -1 and num_zone <10  else "*"
+    #                 interligne += ("│" if bottom else " ") +
+    #                 " " * (len_sp_left + 1)
+    #                 + txt_num_zone + " " * (len_sp_right+1)
+    #                 t+=inters[k]+sep
+    #                 if j==self.width:
+    #                     t+="\n" + interligne + "\n"
+    #     print(t)
 
     def fusionner(self, i, j, dir):
         if not (0 <= i < self.height and 0 <= j < self.width):
             return False
-        if (i, j) in self.lst42:
+        if (i, j) in self.forty_two:
             return False
 
-        cellule = self.cells[i][j]
+        cellule = self.maze[i][j]
         zone1 = int(cellule['zone'])
 
         ni = nj = None
@@ -235,11 +241,11 @@ class Maze:
             return False
         if not (0 <= ni < self.height and 0 <= nj < self.width):
             return False
-        
-        if (ni, nj) in self.lst42:
+
+        if (ni, nj) in self.forty_two:
             return False
 
-        voisin = self.cells[ni][nj]
+        voisin = self.maze[ni][nj]
         zone2 = voisin['zone']
 
         if zone1 == zone2:
@@ -250,19 +256,19 @@ class Maze:
 
         for x in range(self.height):
             for y in range(self.width):
-                if self.cells[x][y]['zone'] == zone2:
-                    self.cells[x][y]['zone'] = zone1
+                if self.maze[x][y]['zone'] == zone2:
+                    self.maze[x][y]['zone'] = zone1
         return True
 
     def generer(self, seed=0):
         zone_id = 0
         for i in range(self.height):
             for j in range(self.width):
-                self.cells[i][j]['zone'] = zone_id
-                self.cells[i][j]['N'] = False
-                self.cells[i][j]['E'] = False
-                self.cells[i][j]['S'] = False
-                self.cells[i][j]['W'] = False
+                self.maze[i][j]['zone'] = zone_id
+                self.maze[i][j]['N'] = False
+                self.maze[i][j]['E'] = False
+                self.maze[i][j]['S'] = False
+                self.maze[i][j]['W'] = False
                 zone_id += 1
         murs = []
 
@@ -298,7 +304,7 @@ class Maze:
             if current == goal:
                 break
             i, j = current
-            cell = self.cells[i][j]
+            cell = self.maze[i][j]
             directions = [
                 ('N', (-1, 0)),
                 ('S', (1, 0)),
@@ -334,7 +340,7 @@ class Maze:
         for i in range(self.height):
             row = ""
             for j in range(self.width):
-                cell = self.cells[i][j]
+                cell = self.maze[i][j]
                 binaire = ""
                 binaire += '1' if cell['W'] else '0'
                 binaire += '1' if cell['S'] else '0'
@@ -357,48 +363,13 @@ def make_file(name, entry, exit, path, hexa):
         print(f"File cannot be opened : {e}")
 
 
-
-def mlx_display(maze: Maze) -> None:
-    m = Mlx()
-    ptr = m.mlx_init()
-    data = m.mlx_get_screen_size(ptr)
-    size = int(((data[1] / 2) / maze.width - 1) / 2)
-    window = m.mlx_new_window(ptr, int(size * maze.width + 20), int(size * maze.height + 20), "Maze")
-    i = 10
-    j = 10
-    for line in maze.cells:
-        for cell in line:
-            if not cell["N"]:
-                for n in range(size):
-                    m.mlx_pixel_put(ptr, window, i + n, j, 0xFFFFFFFF)
-            if not cell["E"]:
-                for n in range(size):
-                    m.mlx_pixel_put(ptr, window, i + size - 1, j + n, 0xFFFFFFFF)
-            if not cell["S"]:
-                for n in range(size):
-                    m.mlx_pixel_put(ptr, window, i + n, j + size - 1, 0xFFFFFFFF)
-            if not cell["W"]:
-                for n in range(size):
-                    m.mlx_pixel_put(ptr, window, i, j + n, 0xFFFFFFFF)
-            i += size
-        i = 10
-        j += size
-
-    def gere_close(dummy):
-        m.mlx_loop_exit(ptr)
-
-    m.mlx_mouse_hook(window, None, None)
-    m.mlx_hook(window, 33, 0, gere_close, None)
-    m.mlx_loop(ptr)
-
-
 def config_maze(dictionaire):
     # print(dictionaire)
     width = int(dictionaire["WIDTH"])
     heigt = int(dictionaire["HEIGHT"])
     entry = dictionaire["ENTRY"]
     exit = dictionaire["EXIT"]
-    name = dictionaire["OUTPUT_FILE"]
+    # name = dictionaire["OUTPUT_FILE"]
     if "SEED" in dictionaire:
         seed = int(dictionaire["SEED"])
     else:

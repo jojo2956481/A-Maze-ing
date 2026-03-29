@@ -5,16 +5,16 @@ class Maze:
     def __init__(self, width: int, height: int) -> None:
         self.width: int = width
         self.height: int = height
+        self.forty_two = []
+        self.get_forty_two()
+
+    def generate_maze(self) -> None:
         self.maze = [[{"N": False, "E": False, "S": False, "W": False}
                       for _ in range(self.width)]
                      for _ in range(self.height)]
         self.empty = {(i, j) for j in range(self.width)
                       for i in range(self.height)}
-        self.forty_two = []
-        self.get_forty_two()
         self.empty = self.empty.difference(set(self.forty_two))
-
-    def generate_maze(self) -> None:
         self.generate_first()
         while self.empty:
             self.generate_all_rest()
