@@ -1,18 +1,18 @@
-from mlx import Mlx
 import random
 
 
-class Visual:
-    def __init__(self, maze):
+class VisualMaze():
+    def __init__(self, maze, mlx, ptr, window, coordinate, entry_exit):
         self.maze = maze
-        self.mlx = Mlx()
-        self.ptr = self.mlx.mlx_init()
-        self.screen_size = self.mlx.mlx_get_screen_size(self.ptr)
-        self.size_case = 0
-        self.window = None
+        self.mlx = mlx
+        self.ptr = ptr
+        self.define_size_case()
+        self.window = window
         self.colors = self.starting_colors()
         self.random_color = False
         self.get_color()
+        self.coordinate = coordinate
+        self.entry_exit = entry_exit
 
     def starting_colors(self) -> None:
         return [("0xFF00FFFF", "0xFF7393B3"),  # Aqua / Blue Gray
@@ -82,20 +82,18 @@ class Visual:
         return j
 
     def color_forty_two(self) -> None:
-        image = self.mlx.mlx_new_image(self.ptr, self.size_case,
-                                       self.size_case)
-        image_info = self.mlx.mlx_get_data_addr(image)[0]
-        for i in range(0, self.size_case ** 2 * 4, 4):
-            image_info[i: i + 4] = self.actual_color[0]
-        for cell in self.maze.forty_two:
-            self.mlx.mlx_put_image_to_window(self.ptr, self.window,
-                                             image, 10 +
-                                             cell[1] * self.size_case,
-                                             cell[0] * self.size_case + 10)
+        data = self.data_image[0]
+        size_line = self.size_case * len(self.maze.maze[0]) * 4
+        for case in self.maze.forty_two:
+            index = (size_line * self.size_case * case[0]) + (self.size_case *
+                                                              case[1] * 4)
+            for i in range(self.size_case):
+                for i in range(0, self.size_case * 4, 4):
+                    data[index + i: index + i + 4] = self.actual_color[0]
+                index += size_line
 
     def refresh(self):
         data = self.data_image[0]
-        self.mlx.mlx_clear_window(self.ptr, self.window)
         index = 0
         for line in self.maze.maze:
             ceilling = [cell["N"] for cell in line]
@@ -106,19 +104,31 @@ class Visual:
             index = self.print_walls(self.size_case, walls, data, index)
             index = self.print_limits(self.size_case, floor, data,
                                       index, walls)
-        self.mlx.mlx_put_image_to_window(self.ptr, self.window,
-                                         self.image_maze, 10, 10)
-        self.color_forty_two()
+        self.show_to_window()
 
-    def create_window(self) -> None:
+    def put_entry_exit(self, cell, color):
+        data = self.data_image[0]
+        size_line = self.size_case * len(self.maze.maze[0]) * 4
+        index = (size_line * self.size_case * cell[0]) + (self.size_case *
+                                                          cell[1] * 4)
+        for i in range(self.size_case):
+            for i in range(0, self.size_case * 4, 4):
+                if data[index + i: index + i + 4] == self.actual_color[1]:
+                    data[index + i: index + i + 4] = bytearray(color)
+            index += size_line
+
+    def show_to_window(self):
+        self.color_forty_two()
+        self.put_entry_exit(self.entry_exit[0], [0, 255, 0, 255])
+        self.put_entry_exit(self.entry_exit[1], [0, 0, 255, 255])
+        self.mlx.mlx_put_image_to_window(self.ptr, self.window,
+                                         self.image_maze, self.coordinate[0],
+                                         self.coordinate[1])
+
+    def define_size_case(self) -> None:
+        self.screen_size = self.mlx.mlx_get_screen_size(self.ptr)
         self.size_case = int(((self.screen_size[1] / 2)
                               / self.maze.width - 1) / 2)
-        self.window = self.mlx.mlx_new_window(self.ptr, int(self.size_case *
-                                                            self.maze.width
-                                                            + 20),
-                                              int(self.size_case *
-                                                  self.maze.height
-                                                  + 20), "Maze")
 
     def create_maze_image(self):
         self.image_maze = self.mlx.mlx_new_image(self.ptr,
@@ -127,18 +137,3 @@ class Visual:
                                                  int(self.size_case *
                                                      self.maze.height))
         self.data_image = self.mlx.mlx_get_data_addr(self.image_maze)
-
-    def gere_close(self, dummy):
-        self.mlx.mlx_loop_exit(self.ptr)
-
-    def closing(self, keycode, params):
-        if keycode == 113:
-            self.mlx.mlx_loop_exit(self.ptr)
-        if keycode == 99:
-            self.get_color()
-            self.refresh()
-        if keycode == 110:
-            self.maze.generate_maze()
-            self.refresh()
-        if keycode == 114:
-            self.random_color = not self.random_color

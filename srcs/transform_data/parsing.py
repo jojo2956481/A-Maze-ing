@@ -56,16 +56,16 @@ def read_file():
         return print(f"ERROR: {e}")
 
 
-def check_dict(dictionaire):
+def check_dict(dictionaire) -> bool:
     valide_key = {"WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"}
     optional_keys = {"SEED"}
     for name in dictionaire:
         if name not in valide_key and name not in optional_keys:
             print("Error invalide Key")
             return False
-
     keys = set(dictionaire.keys())
-
+    if int(dictionaire["HEIGHT"]) < 7 or int(dictionaire["WIDTH"]) < 9:
+        return False
     if not valide_key.issubset(keys):
         print("Error invalide Key")
         return False

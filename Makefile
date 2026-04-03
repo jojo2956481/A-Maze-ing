@@ -23,6 +23,7 @@ name:
 	@$(PYTHON) srcs/main.py $(FILE)
 
 clean:
-	rm -f *.pyc __pycache__/*
+	rm -r */*/*__pycache__/
+	rm */*.xpm
 	rm maze.txt
 	rm -rf .venv

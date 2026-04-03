@@ -1,7 +1,8 @@
 from algo.wilson_iterative import Maze
-from parsing.visual import Visual
-import parsing.parsing as parsing
+from visual.visual_manager import VisualManager
+import transform_data.parsing as parsing
 from enum import Enum
+from algo.solver import solver_all_path
 # from algo.genere_maze import Maze
 
 
@@ -16,14 +17,22 @@ class HandleMaze:
     def __init__(self):
         self.data = parsing.pars_dict()
         self.maze = Maze(int(self.data["WIDTH"]), int(self.data["HEIGHT"]))
-        self.visual = Visual(self.maze)
+        self.maze.generate_maze()
+        self.visual = VisualManager()
+        entry_exit = self.get_entry_exit(self.data["ENTRY"], self.data["EXIT"])
+        paths = solver_all_path(entry_exit, self.maze)
+        self.visual.get_visuals(self.maze, entry_exit, paths)
         self.default_maze()
 
+    def get_entry_exit(self, entry: str, exit: str) -> tuple:
+        entry = entry.split(",")
+        exit = exit.split(",")
+        entry = (int(entry[0]), int(entry[1]))
+        exit = (int(exit[0]), int(exit[1]))
+        return (entry, exit)
+
     def default_maze(self):
-        self.maze.generate_maze()
-        self.visual.create_window()
-        self.visual.create_maze_image()
-        self.visual.refresh()
+        self.visual.generate_default()
 
     def looping(self):
         self.visual.mlx.mlx_key_hook(self.visual.window,

@@ -1,15 +1,10 @@
-
 import random
-from collections import deque
-from transform_data.parsing import pars_dict
-
-# j'ai implementé l'algorithm de Kruskal pour generer le maze
-# j'ai implémnter l'algotithm de BFS (Breadth-First Search) pour le solver
-# la fonction display est generé par ia juste pour avoir un rendu
+from srcs.transform_data.parsing import pars_dict
+from .solver import solver_bfs, solver_all_path
 
 
-class Maze:
-    def __init__(self, width, height):
+class dfs():
+    def __init__(self, width: int, height: int):
         self.width = width
         self.height = height
         self.maze = []
@@ -26,7 +21,7 @@ class Maze:
     def execute_dfs(self, seed=None):
         if seed is not None:
             random.seed(seed)
-
+        
         i, j = self.start()
         self.dfs_recursive(i, j)
 
@@ -40,7 +35,7 @@ class Maze:
                 self.maze[i][j]['S'] = False
                 self.maze[i][j]['W'] = False
                 self.lst_grille.append((i, j))
-
+    
     def start(self):
         while True:
             i, j = random.choice(self.lst_grille)
@@ -101,10 +96,10 @@ class Maze:
 
             if not moved:
                 stack.pop()
-
+    
     def place_42(self):
         centre_i = self.height // 2
-        centre_j = self.width // 2
+        centre_j = self.width // 2 + 1 if self.width % 2 == 1 else self.width // 2
 
         four = [
             [1, 0, 0],
@@ -139,20 +134,7 @@ class Maze:
                     j = start_j + dj + 4
                     if 0 <= i < self.height and 0 <= j < self.width:
                         self.forty_two.append((i, j))
-
-    def display42(self):
-        for i in range(self.height):
-            line = ""
-            for j in range(self.width):
-                cell = self.maze[i][j]
-                if any([cell[dir] for dir in ['N', 'E', 'S', 'W']]):
-                    # line += " "
-                    pass
-                else:
-                    # line += "░"
-                    print(cell)
-            print(line)
-
+        
     def display(self, print_zones=False):
         from math import floor
         #alias :
@@ -207,158 +189,40 @@ class Maze:
                         t+="\n" + interligne + "\n"
         print(t)
 
-    def fusionner(self, i, j, dir):
-        if not (0 <= i < self.height and 0 <= j < self.width):
-            return False
-        if (i, j) in self.forty_two:
-            return False
+    def imperfect_maze(self):
+        mur = 0
+        for ligne in self.maze:
+            for cell in ligne:
+                for value in cell.values():
+                    if value == False:
+                        mur += 1
+        mur = mur // 2
+        mur = mur - (self.height + self.width)
+        mur = mur - 55
+        result = int(mur * 0.5)
+        directions = {
+            'N': (-1, 0, 'S'),
+            'S': (1, 0, 'N'),
+            'E': (0, 1, 'W'),
+            'W': (0, -1, 'E')
+        }
+        for _ in range(result):
+            i = random.randint(0, self.height - 1)
+            j = random.randint(0, self.width - 1)
 
-        cellule = self.maze[i][j]
-        zone1 = int(cellule['zone'])
+            dir_name = random.choice(list(directions.keys()))
+            di, dj, opposite = directions[dir_name]
 
-        ni = nj = None
-        mur_cell = mur_voisin = None
+            ni, nj = i + di, j + dj
+            if 0 <= ni < self.height and 0 <= nj < self.width:
+                if not self.maze[i][j][dir_name]:
+                    if self.maze[i][j]["zone"] != 0:
+                        if self.maze[ni][nj]["zone"] != 0:
+                            if sum(1 for v in self.maze[i][j].values() if not v) >= 1:
+                                if sum(1 for v in self.maze[ni][nj].values() if not v) >= 1:
 
-        if dir == 'N':
-            ni, nj = i - 1, j
-            mur_cell = 'N'
-            mur_voisin = 'S'
-        elif dir == 'S':
-            ni, nj = i + 1, j
-            mur_cell = 'S'
-            mur_voisin = 'N'
-        elif dir == 'E':
-            ni, nj = i, j + 1
-            mur_cell = 'E'
-            mur_voisin = 'W'
-        elif dir == 'W':
-            ni, nj = i, j - 1
-            mur_cell = 'W'
-            mur_voisin = 'E'
-        else:
-            return False
-        if not (0 <= ni < self.height and 0 <= nj < self.width):
-            return False
-
-        if (ni, nj) in self.forty_two:
-            return False
-
-        voisin = self.maze[ni][nj]
-        zone2 = voisin['zone']
-
-        if zone1 == zone2:
-            return False
-
-        cellule[mur_cell] = True
-        voisin[mur_voisin] = True
-
-        for x in range(self.height):
-            for y in range(self.width):
-                if self.maze[x][y]['zone'] == zone2:
-                    self.maze[x][y]['zone'] = zone1
-        return True
-
-    def generer(self, seed=0):
-        zone_id = 0
-        for i in range(self.height):
-            for j in range(self.width):
-                self.maze[i][j]['zone'] = zone_id
-                self.maze[i][j]['N'] = False
-                self.maze[i][j]['E'] = False
-                self.maze[i][j]['S'] = False
-                self.maze[i][j]['W'] = False
-                zone_id += 1
-        murs = []
-
-        for i in range(self.height):
-            for j in range(self.width):
-                if j < self.width - 1:
-                    murs.append((i, j, 'E'))
-                if i < self.height - 1:
-                    murs.append((i, j, 'S'))
-
-        if seed is not None:
-            random.seed(seed)
-        random.shuffle(murs)
-        for (i, j, direction) in murs:
-            self.fusionner(i, j, direction)
-
-    def solver(self, entry, exit):
-        e_x, e_y = map(int, entry.split(","))
-        o_x, o_y = map(int, exit.split(","))
-
-        start = (e_y, e_x)
-        goal = (o_y, o_x)
-
-        queue = deque([start])
-        visited = set()
-        parents = {}
-
-        visited.add(start)
-
-        while queue:
-            current = queue.popleft()
-
-            if current == goal:
-                break
-            i, j = current
-            cell = self.maze[i][j]
-            directions = [
-                ('N', (-1, 0)),
-                ('S', (1, 0)),
-                ('E', (0, 1)),
-                ('W', (0, -1))
-            ]
-            for direction, (di, dj) in directions:
-                if cell[direction]:
-                    ni, nj = i + di, j + dj
-                    neighbor = (ni, nj)
-                    if 0 <= ni < self.height and 0 <= nj < self.width:
-                        neighbor = (ni, nj)
-                    if neighbor not in visited:
-                        visited.add(neighbor)
-                        parents[neighbor] = (current, direction)
-                        queue.append(neighbor)
-        path = []
-        lst = ""
-        current = goal
-        while current != start:
-            parent, direction = parents[current]
-            path.append((current, direction))
-            current = parent
-        path.append((start, None))
-        path.reverse()
-        for cell, direction in path:
-            if direction is not None:
-                lst += direction
-        return lst
-
-    def return_exa(self):
-        line = []
-        for i in range(self.height):
-            row = ""
-            for j in range(self.width):
-                cell = self.maze[i][j]
-                binaire = ""
-                binaire += '1' if cell['W'] else '0'
-                binaire += '1' if cell['S'] else '0'
-                binaire += '1' if cell['E'] else '0'
-                binaire += '1' if cell['N'] else '0'
-
-                row += format(int(binaire, 2), 'X')
-            line.append(row)
-        return "\n".join(line)
-
-
-def make_file(name, entry, exit, path, hexa):
-    try:
-        with open(name, "w") as f:
-            f.write(hexa + "\n\n")
-            f.write(entry + "\n")
-            f.write(exit + "\n")
-            f.write(path)
-    except IOError as e:
-        print(f"File cannot be opened : {e}")
+                                    self.maze[i][j][dir_name] = True
+                                    self.maze[ni][nj][opposite] = True
 
 
 def config_maze(dictionaire):
@@ -367,26 +231,20 @@ def config_maze(dictionaire):
     heigt = int(dictionaire["HEIGHT"])
     entry = dictionaire["ENTRY"]
     exit = dictionaire["EXIT"]
-    # name = dictionaire["OUTPUT_FILE"]
     if "SEED" in dictionaire:
         seed = int(dictionaire["SEED"])
     else:
         seed = None
-    grille = Maze(width, heigt)
+    grille = dfs(width, heigt)
     grille.init_grille()
     grille.place_42()
     grille.execute_dfs(seed)
-    # grille.generer(seed)
-    # grille.display42()
     grille.display()
-    # print(entry)
-    # print(exit)
-    path = grille.solver(entry, exit)
-    print(path)
-    # hexa = grille.return_exa()
-    print()
-    # make_file(name, entry, exit, path, hexa)
-    # mlx_display(grille)
+    print(solver_bfs(entry, exit, grille))
+    # print(solver_all_path(entry, exit, grille))
+    grille.imperfect_maze()
+    grille.display()
+    print(solver_all_path(entry, exit, grille))
 
 
 if __name__ == "__main__":
