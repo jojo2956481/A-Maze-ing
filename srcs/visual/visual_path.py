@@ -29,11 +29,11 @@ class VisualPath:
                         data[pos + i: pos + i + 4] = color
                 pos += size_line
             if self.speed:
-                sleep()
                 self.mlx.mlx_put_image_to_window(self.ptr, self.window,
                                                  self.visual.image_maze,
                                                  self.coordinate[0],
                                                  self.coordinate[1])
+                yield "Not finished"
         self.mlx.mlx_put_image_to_window(self.ptr, self.window,
                                          self.visual.image_maze,
                                          self.coordinate[0],

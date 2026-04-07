@@ -1,6 +1,6 @@
 from algo.wilson_iterative import Maze
 from visual.visual_manager import VisualManager
-import transform_data.parsing as parsing
+import data_handling.parsing as parsing
 from enum import Enum
 from algo.solver import solver_all_path
 # from algo.genere_maze import Maze

@@ -12,6 +12,12 @@ class VisualManager:
         self.window = self.mlx.mlx_new_window(self.ptr, 1500, 1150,
                                               "A-maze-ing")
 
+    def handle_screen_size(self):
+        screen_size = self.mlx.mlx_get_screen_size(self.ptr)
+        self.screen_management = {
+            "window": (screen_size[1] // 2 - 50, screen_size[2] // 2 - 50)
+        }
+
     def get_visuals(self, maze, entry_exit, paths) -> None:
         self.maze = VisualMaze(maze, self.mlx, self.ptr,
                                self.window, (100, 200), entry_exit)
