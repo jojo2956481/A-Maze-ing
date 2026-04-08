@@ -8,7 +8,7 @@ class VisualPath:
         self.ptr = ptr
         self.window = window
         self.coordinate = coordinate
-        self.paths = [[value[0] for value in path] for path in paths]
+        self.paths = paths
         self.actual_path = 0
         self.maze = maze
         self.speed = 0
@@ -17,7 +17,7 @@ class VisualPath:
     def show_path(self, color=None):
         data = self.visual.data_image[0]
         if not color:
-            color = bytearray([255, 255, 255, 255])
+            color = bytearray([0, 0, 0, 80])
         for cell in self.paths[self.actual_path]:
             size_line = self.visual.size_case * len(self.maze.maze[0]) * 4
             pos = (size_line * self.visual.size_case *
@@ -29,11 +29,11 @@ class VisualPath:
                         data[pos + i: pos + i + 4] = color
                 pos += size_line
             if self.speed:
+                sleep()
                 self.mlx.mlx_put_image_to_window(self.ptr, self.window,
                                                  self.visual.image_maze,
                                                  self.coordinate[0],
                                                  self.coordinate[1])
-                yield "Not finished"
         self.mlx.mlx_put_image_to_window(self.ptr, self.window,
                                          self.visual.image_maze,
                                          self.coordinate[0],

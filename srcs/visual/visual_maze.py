@@ -6,12 +6,12 @@ class VisualMaze():
         self.maze = maze
         self.mlx = mlx
         self.ptr = ptr
-        self.define_size_case()
+        self.define_size_case(coordinate[0])
         self.window = window
         self.colors = self.starting_colors()
         self.random_color = False
         self.get_color()
-        self.coordinate = coordinate
+        self.coordinate = coordinate[1]
         self.entry_exit = entry_exit
 
     def starting_colors(self) -> None:
@@ -125,10 +125,9 @@ class VisualMaze():
                                          self.image_maze, self.coordinate[0],
                                          self.coordinate[1])
 
-    def define_size_case(self) -> None:
-        self.screen_size = self.mlx.mlx_get_screen_size(self.ptr)
-        self.size_case = int(((self.screen_size[1] / 2)
-                              / self.maze.width - 1) / 2)
+    def define_size_case(self, size_maze) -> None:
+        self.size_case = int(size_maze[1]
+                             / self.maze.width)
 
     def create_maze_image(self):
         self.image_maze = self.mlx.mlx_new_image(self.ptr,

@@ -3,14 +3,13 @@ from mlx import Mlx
 
 
 class VisualInfo:
-    def __init__(self, mlx, ptr, window, title, infos, color):
+    def __init__(self, mlx, ptr, window, title, infos):
         self.mlx = mlx
         self.ptr = ptr
         self.string = [Mlx() for i in range(10)]
         self.window = window
         self.title_coordinate = title
         self.infos_coordinate = infos
-        self.color = color
 
     def print_info(self) -> None:
         self.generate_title()
@@ -47,11 +46,11 @@ class VisualInfo:
         data = self.mlx.mlx_get_data_addr(temp)[0]
         for i in range(0, len(list(data)), 4):
             if i % 1200 <= 8 or i % 1200 >= 1187:
-                data[i: i + 4] = self.color[0]
+                data[i: i + 4] = bytearray([169, 169, 169, 255])
             elif i // 1200 <= 2 or i // 1200 >= 598:
-                data[i: i + 4] = self.color[0]
+                data[i: i + 4] = bytearray([169, 169, 169, 255])
             else:
-                data[i: i + 4] = self.color[1]
+                data[i: i + 4] = bytearray([246, 249, 250, 255])
         self.mlx.mlx_put_image_to_window(self.ptr, self.window, temp,
                                          self.infos_coordinate[0],
                                          self.infos_coordinate[1])

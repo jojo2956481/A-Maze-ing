@@ -1,6 +1,6 @@
 from algo.wilson_iterative import Maze
 from visual.visual_manager import VisualManager
-import data_handling.parsing as parsing
+import transform_data.parsing as parsing
 from enum import Enum
 from algo.solver import solver_all_path
 # from algo.genere_maze import Maze
@@ -20,8 +20,7 @@ class HandleMaze:
         self.maze.generate_maze()
         self.visual = VisualManager()
         entry_exit = self.get_entry_exit(self.data["ENTRY"], self.data["EXIT"])
-        paths = solver_all_path(entry_exit, self.maze)
-        self.visual.get_visuals(self.maze, entry_exit, paths)
+        self.visual.get_visuals(self.maze, entry_exit)
         self.default_maze()
 
     def get_entry_exit(self, entry: str, exit: str) -> tuple:
