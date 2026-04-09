@@ -8,7 +8,8 @@ class VisualInfo:
         self.ptr = ptr
         self.string = [Mlx() for i in range(10)]
         self.window = window
-        self.title_coordinate = title
+        self.title_coordinate = title[0]
+        self.title_size = title[1]
         self.infos_coordinate = infos
 
     def print_info(self) -> None:
@@ -16,7 +17,7 @@ class VisualInfo:
         self.generate_commands()
 
     def generate_title(self) -> None:
-        create_xpm_title("A-maze-ing", "amazing.xpm", 15)
+        create_xpm_title("A-maze-ing", "amazing.xpm", self.title_size)
         create_xpm_title("Commands", "commands.xpm", 5)
 
     def generate_commands(self):

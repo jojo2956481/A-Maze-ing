@@ -1,8 +1,7 @@
 from algo.wilson_iterative import Maze
 from visual.visual_manager import VisualManager
-import transform_data.parsing as parsing
+import data_handling.parsing as parsing
 from enum import Enum
-from algo.solver import solver_all_path
 # from algo.genere_maze import Maze
 
 
@@ -18,7 +17,7 @@ class HandleMaze:
         self.data = parsing.pars_dict()
         self.maze = Maze(int(self.data["WIDTH"]), int(self.data["HEIGHT"]))
         self.maze.generate_maze()
-        self.visual = VisualManager()
+        self.visual = VisualManager(3)
         entry_exit = self.get_entry_exit(self.data["ENTRY"], self.data["EXIT"])
         self.visual.get_visuals(self.maze, entry_exit)
         self.default_maze()

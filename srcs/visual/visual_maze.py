@@ -126,7 +126,7 @@ class VisualMaze():
                                          self.coordinate[1])
 
     def define_size_case(self, size_maze) -> None:
-        self.size_case = int(size_maze[1]
+        self.size_case = int(size_maze[0]
                              / self.maze.width)
 
     def create_maze_image(self):

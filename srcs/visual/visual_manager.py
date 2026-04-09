@@ -7,29 +7,35 @@ from algo.solver import solver_all_path
 
 
 class VisualManager:
-    def __init__(self):
+    def __init__(self, window_size):
         self.mlx = Mlx()
         self.ptr = self.mlx.mlx_init()
-        self.handle_screen_size()
+        self.handle_screen_size(window_size)
         self.window = self.mlx.mlx_new_window(self.ptr,
                                               self.screen["window"][0],
                                               self.screen["window"][1],
                                               "A-maze-ing")
 
-    def handle_screen_size(self):
+    def handle_screen_size(self, window_size):
         screen_size = self.mlx.mlx_get_screen_size(self.ptr)
         self.screen = {
-            "window": (int(screen_size[1] // 2.5 * 1.5),
-                       int(screen_size[2] // 1.8 * 1.5))
+            "window": (int(screen_size[1] // 2.5 * (1 + 0.4 *
+                                                    (window_size - 1))),
+                       int(screen_size[2] // 1.8 * (1 + 0.4 *
+                                                    (window_size - 1))))
         }
         self.screen["maze"] = (((self.screen["window"][0] // 3) * 2,
                                 (self.screen["window"][1] // 3) * 2),
                                (self.screen["window"][0] // 15,
                                 self.screen["window"][1] // 6))
-        self.screen["info"] = (self.screen["window"][0] // 5,
-                               self.screen["window"][1] // 15)
-        self.screen["title"] = (int(self.screen["window"][0] * 0.73),
-                                int(self.screen["window"][1] // 3))
+        self.screen["info"] = (self.screen["maze"][1][0] + 100 +
+                               (self.screen["maze"][0][0]),
+                               self.screen["maze"][1][1] +
+                               (self.screen["maze"][0][0] // 2) - 300)
+        self.screen["title"] = ((int(self.screen["window"][0] // 2) -
+                                (int(self.screen["window"][0] // 100) * 25),
+                                self.screen["window"][1] // 15),
+                                self.screen["window"][0] // 100)
         print(screen_size, self.screen)
 
     def get_visuals(self, maze, entry_exit) -> None:
@@ -38,7 +44,7 @@ class VisualManager:
         self.maze = VisualMaze(maze, self.mlx, self.ptr,
                                self.window, self.screen["maze"], entry_exit)
         self.info = VisualInfo(self.mlx, self.ptr, self.window,
-                               self.screen["info"], self.screen["title"])
+                               self.screen["title"], self.screen["info"])
         self.path = VisualPath(self.mlx, self.ptr, self.window,
                                self.screen["maze"][1],
                                paths, maze, self.maze)

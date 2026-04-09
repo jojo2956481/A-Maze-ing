@@ -62,8 +62,12 @@ class VisualPlay:
                 return False
         if not walls[2] and (corners[0][0] // self.size_case !=
                              corners[1][0] // self.size_case):
-            if corners[0][1] % 10 != 9:
-                return False
+            return False
+        if (corners[0][0] % self.size_case == 0 and not cells[0]["W"]):
+            return False
+        if (corners[1][0] % self.size_case == self.size_case - 1 and
+                not cells[1]["E"]):
+            return False
         return True
 
     def check_est(self, new_pos):
@@ -79,8 +83,12 @@ class VisualPlay:
                 return False
         if not walls[2] and (corners[0][1] // self.size_case !=
                              corners[1][1] // self.size_case):
-            if corners[0][0] % 10 != 0:
-                return False
+            return False
+        if (corners[0][1] % self.size_case == 0 and not cells[0]["N"]):
+            return False
+        if (corners[1][1] % self.size_case == self.size_case - 1 and
+                not cells[1]["S"]):
+            return False
         return True
 
     def check_south(self, new_pos):
@@ -96,8 +104,12 @@ class VisualPlay:
                 return False
         if not walls[2] and (corners[0][0] // self.size_case !=
                              corners[1][0] // self.size_case):
-            if corners[0][1] % 10 != 0:
-                return False
+            return False
+        if (corners[0][0] % self.size_case == 0 and not cells[0]["W"]):
+            return False
+        if (corners[1][0] % self.size_case == self.size_case - 1 and
+                not cells[1]["E"]):
+            return False
         return True
 
     def check_west(self, new_pos):
@@ -113,8 +125,12 @@ class VisualPlay:
                 return False
         if not walls[2] and (corners[0][1] // self.size_case !=
                              corners[1][1] // self.size_case):
-            if corners[0][0] % 10 != 9:
-                return False
+            return False
+        if (corners[0][1] % self.size_case == 0 and not cells[0]["N"]):
+            return False
+        if (corners[1][1] % self.size_case == self.size_case - 1 and
+                not cells[1]["S"]):
+            return False
         return True
 
     def new_pos_valid(self, new_pos, direction) -> None:
