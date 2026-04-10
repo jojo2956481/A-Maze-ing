@@ -1,9 +1,12 @@
 from .xpm.xpm_generator import create_xpm_title
 from mlx import Mlx
+from typing import Any
 
 
 class VisualInfo:
-    def __init__(self, mlx, ptr, window, title, infos):
+    def __init__(self, mlx: Mlx, ptr: Any, window: Any,
+                 title: tuple[tuple[int, int], int],
+                 infos: tuple[int, int]) -> None:
         self.mlx = mlx
         self.ptr = ptr
         self.string = [Mlx() for i in range(10)]
@@ -20,7 +23,7 @@ class VisualInfo:
         create_xpm_title("A-maze-ing", "amazing.xpm", self.title_size)
         create_xpm_title("Commands", "commands.xpm", 5)
 
-    def generate_commands(self):
+    def generate_commands(self) -> None:
         image = self.mlx.mlx_xpm_file_to_image(self.ptr, "amazing.xpm")
         self.mlx.mlx_put_image_to_window(self.ptr, self.window, image[0],
                                          self.title_coordinate[0],
@@ -33,8 +36,11 @@ class VisualInfo:
         commands = ["quit: q", "change color: c", "random color: r",
                     "new maze: n", "active/stop play mode: p",
                     "change game speed: + and -", "show path: s",
-                    "hide path: h"]
-        i = 20
+                    "hide path: h", "previous solution:", "   - up arrow",
+                    "next solution:", "   - down arrow",
+                    "active/stop instant path: i", "higher path speed:",
+                    "   - right arrow", "lower path speed:", "   - left arrow"]
+        i = 30
         for z in range(len(commands)):
             self.mlx.mlx_string_put(self.ptr, self.window,
                                     self.infos_coordinate[0] + 20,
@@ -42,7 +48,7 @@ class VisualInfo:
                                     0xFF000000, commands[z])
             i += 30
 
-    def generate_background(self):
+    def generate_background(self) -> None:
         temp = self.mlx.mlx_new_image(self.ptr, 300, 600)
         data = self.mlx.mlx_get_data_addr(temp)[0]
         for i in range(0, len(list(data)), 4):

@@ -1,7 +1,8 @@
 import random
+from .maze import Maze
 
 
-class Maze:
+class WilsonMaze(Maze):
     def __init__(self, width: int, height: int) -> None:
         self.width: int = width
         self.height: int = height
@@ -62,7 +63,7 @@ class Maze:
                       for _ in range(self.width)]
                      for _ in range(self.height)]
 
-    def generate_first(self) -> list:
+    def generate_first(self) -> None:
         pos = random.choice(list(self.empty))
         end = random.choice(list(self.empty))
         visited = [pos]
@@ -82,9 +83,9 @@ class Maze:
             if visited[-1] == end:
                 self.empty = self.empty.difference(set(visited))
                 self.open_wall(visited)
-                return visited
+                return
 
-    def generate_all_rest(self) -> list:
+    def generate_all_rest(self) -> None:
         pos = random.choice(list(self.empty))
         visited = [pos]
         while True:
@@ -103,9 +104,9 @@ class Maze:
             if visited[-1] not in self.empty:
                 self.empty = self.empty.difference(set(visited))
                 self.open_wall(visited)
-                return visited
+                return
 
-    def get_new_pos(self, pos, next):
+    def get_new_pos(self, pos: tuple[int, int], next: str) -> tuple[int, int]:
         if (next == "N"):
             new_pos = (pos[0] - 1, pos[1])
         if (next == "E"):
@@ -116,7 +117,7 @@ class Maze:
             new_pos = (pos[0], pos[1] - 1)
         return new_pos
 
-    def open_wall(self, visited) -> None:
+    def open_wall(self, visited: list[tuple[int, int]]) -> None:
         for i in range(len(visited) - 1):
             if visited[i][0] - visited[i + 1][0] == 1:
                 direction = "N"
@@ -128,7 +129,7 @@ class Maze:
                 direction = "W"
             self.open_neighnbor(visited[i], direction)
 
-    def open_neighnbor(self, cell: tuple, direction: str) -> None:
+    def open_neighnbor(self, cell: tuple[int, int], direction: str) -> None:
         if direction == "N":
             self.maze[cell[0]][cell[1]]["N"] = True
             self.maze[cell[0] - 1][cell[1]]["S"] = True
@@ -142,7 +143,8 @@ class Maze:
             self.maze[cell[0]][cell[1]]["W"] = True
             self.maze[cell[0]][cell[1] - 1]["E"] = True
 
-    def check_next_good(self, visited, next) -> bool:
+    def check_next_good(self, visited: list[tuple[int, int]],
+                        next: str) -> bool:
         pos = visited[-1]
         new_pos = self.get_new_pos(pos, next)
         if (new_pos[0] >= self.height or new_pos[0] < 0 or
@@ -152,7 +154,7 @@ class Maze:
             return False
         return True
 
-    def is_in_maze(self, pos) -> bool:
+    def is_in_maze(self, pos: tuple[int, int]) -> bool:
         if pos not in self.empty:
             return True
         return False

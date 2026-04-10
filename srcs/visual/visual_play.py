@@ -1,6 +1,15 @@
+from mlx import Mlx
+from typing import Any
+from algo.maze import Maze
+from .visual_maze import VisualMaze
+
+
 class VisualPlay:
-    def __init__(self, mlx, ptr, window, maze, size_case,
-                 entry_exit, maze_coordinate, visual_maze):
+    def __init__(self, mlx: Mlx, ptr: Any, window: Any, maze: Maze,
+                 size_case: int,
+                 entry_exit: tuple[tuple[int, int], tuple[int, int]],
+                 maze_coordinate: tuple[int, int],
+                 visual_maze: VisualMaze) -> None:
         self.mlx = mlx
         self.ptr = ptr
         self.window = window
@@ -22,7 +31,7 @@ class VisualPlay:
         for i in range(0, len(list(data)), 4):
             data[i: i + 4] = bytearray([52, 52, 52, 255])
 
-    def is_in_maze(self, mouse) -> None:
+    def is_in_maze(self, mouse: tuple[int, int]) -> None:
         try:
             if (mouse[0] >= 0 and
                     mouse[0] <= self.maze_len[0] * self.size_case and
@@ -34,7 +43,7 @@ class VisualPlay:
             self.maze_len = (len(self.maze.maze[0]), len(self.maze.maze))
             return self.is_in_maze(mouse)
 
-    def get_direction(self, mouse) -> None:
+    def get_direction(self, mouse: tuple[int, int]) -> None:
         new_pos = ((mouse[0] - self.coordinate[0]) - self.size // 2,
                    (mouse[1] - self.coordinate[1]) - self.size // 2)
         if abs(new_pos[0]) > abs(new_pos[1]):
@@ -49,7 +58,7 @@ class VisualPlay:
                 direction = "N"
         return direction
 
-    def check_north(self, new_pos):
+    def check_north(self, new_pos: tuple[int, int]) -> bool:
         corners = ((new_pos[0], new_pos[1]),
                    (new_pos[0] + self.size - 1, new_pos[1]))
         cells = (self.maze.maze[int(corners[0][1] / self.size_case)]
@@ -70,7 +79,7 @@ class VisualPlay:
             return False
         return True
 
-    def check_est(self, new_pos):
+    def check_est(self, new_pos: tuple[int, int]) -> bool:
         corners = ((new_pos[0] + self.size - 1, new_pos[1]),
                    (new_pos[0] + self.size - 1, new_pos[1] + self.size - 1))
         cells = (self.maze.maze[int(corners[0][1] / self.size_case)]
@@ -91,7 +100,7 @@ class VisualPlay:
             return False
         return True
 
-    def check_south(self, new_pos):
+    def check_south(self, new_pos: tuple[int, int]) -> bool:
         corners = ((new_pos[0], new_pos[1] + self.size - 1),
                    (new_pos[0] + self.size - 1, new_pos[1] + self.size - 1))
         cells = (self.maze.maze[int(corners[0][1] / self.size_case)]
@@ -112,7 +121,7 @@ class VisualPlay:
             return False
         return True
 
-    def check_west(self, new_pos):
+    def check_west(self, new_pos: tuple[int, int]) -> bool:
         corners = ((new_pos[0], new_pos[1]),
                    (new_pos[0], new_pos[1] + self.size - 1))
         cells = (self.maze.maze[int(corners[0][1] / self.size_case)]
@@ -133,7 +142,7 @@ class VisualPlay:
             return False
         return True
 
-    def new_pos_valid(self, new_pos, direction) -> None:
+    def new_pos_valid(self, new_pos: tuple[int, int], direction: str) -> None:
         if direction == "N":
             return self.check_north(new_pos)
         elif direction == "E":
@@ -143,7 +152,7 @@ class VisualPlay:
         else:
             return self.check_west(new_pos)
 
-    def move_player(self, direction):
+    def move_player(self, direction: str) -> None:
         if direction == "N":
             new_pos = (self.coordinate[0], self.coordinate[1] - 1)
         elif direction == "E":
@@ -155,7 +164,7 @@ class VisualPlay:
         if self.new_pos_valid(new_pos, direction):
             self.coordinate = new_pos
 
-    def play(self, *params) -> None:
+    def play(self, params: Any) -> None:
         if self.playmod and self.size <= self.size_case - 2:
             for i in range(self.game_speed):
                 _, x, y = self.mlx.mlx_mouse_get_pos(self.window)

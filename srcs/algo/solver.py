@@ -1,5 +1,6 @@
 from collections import deque
 from typing import Any
+from .maze import Maze
 
 
 def solver_bfs(entry, exit, maze: Any) -> str:
@@ -53,7 +54,8 @@ def solver_bfs(entry, exit, maze: Any) -> str:
     return path
 
 
-def solver_all_path(entry_exit, maze: Any) -> list:
+def solver_all_path(entry_exit: tuple[tuple[int, int], tuple[int, int]],
+                    maze: Maze) -> list[list]:
     start = entry_exit[0]
     goal = entry_exit[1]
     all_path = []
@@ -82,4 +84,4 @@ def solver_all_path(entry_exit, maze: Any) -> list:
                     if neighbor not in [p[0] for p in path]:
                         stack.append((neighbor, path +
                                       [(neighbor, direction)]))
-    return all_path
+    return sorted(all_path, key=lambda x: len(x))
