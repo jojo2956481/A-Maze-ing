@@ -46,7 +46,7 @@ class VisualMaze():
                 self.get_color()
                 return
             else:
-                self.actual_color = temp
+                self.actual_color: tuple[bytearray, bytearray] = temp
         except AttributeError:
             self.actual_color = temp
 
@@ -114,7 +114,7 @@ class VisualMaze():
         self.show_to_window()
 
     def put_entry_exit(self, cell: tuple[int, int],
-                       color: list[int, int, int, int]) -> None:
+                       color: list[int]) -> None:
         data = self.data_image[0]
         size_line = self.size_case * len(self.maze.maze[0]) * 4
         index = (size_line * self.size_case * cell[0]) + (self.size_case *
@@ -133,7 +133,7 @@ class VisualMaze():
                                          self.image_maze, self.coordinate[0],
                                          self.coordinate[1])
 
-    def define_size_case(self, size_maze) -> None:
+    def define_size_case(self, size_maze: tuple[int, int]) -> None:
         self.size_case = int(size_maze[0]
                              / self.maze.width)
 

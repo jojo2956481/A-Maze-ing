@@ -1,8 +1,8 @@
 from mlx import Mlx
-from .visual_info import VisualInfo
-from .visual_maze import VisualMaze
-from .visual_path import VisualPath
-from .visual_play import VisualPlay
+from visual.visual_info import VisualInfo
+from visual.visual_maze import VisualMaze
+from visual.visual_path import VisualPath
+from visual.visual_play import VisualPlay
 from algo.solver import solver_all_path
 from algo.maze import Maze
 from typing import Any
@@ -38,7 +38,7 @@ class VisualManager:
 
     def handle_screen_size(self, window_size: int) -> None:
         screen_size = self.mlx.mlx_get_screen_size(self.ptr)
-        self.screen = {
+        self.screen: dict[str, Any] = {
             "window": (int(screen_size[1] // 2.5 * (1 + 0.4 *
                                                     (window_size - 1))),
                        int(screen_size[2] // 1.8 * (1 + 0.4 *

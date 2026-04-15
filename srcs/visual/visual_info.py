@@ -1,4 +1,4 @@
-from .xpm.xpm_generator import create_xpm_title
+from visual.xpm.xpm_generator import create_xpm_title
 from mlx import Mlx
 from typing import Any
 

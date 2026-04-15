@@ -10,17 +10,17 @@ class HandleMaze:
         self.maze = WilsonMaze(int(self.data["WIDTH"]),
                                int(self.data["HEIGHT"]))
         self.maze.generate_maze()
-        self.visual = VisualManager(1)
+        self.visual = VisualManager(3)
         entry_exit = self.get_entry_exit(self.data["ENTRY"], self.data["EXIT"])
         self.visual.get_visuals(self.maze, entry_exit)
         self.default_maze()
 
     def get_entry_exit(self, entry: str, exit: str) -> tuple:
-        entry = entry.split(",")
-        exit = exit.split(",")
-        entry = (int(entry[0]), int(entry[1]))
-        exit = (int(exit[0]), int(exit[1]))
-        return (entry, exit)
+        lst_entry = entry.split(",")
+        lst_exit = exit.split(",")
+        coord_entry = (int(lst_entry[0]), int(lst_entry[1]))
+        coord_exit = (int(lst_exit[0]), int(lst_exit[1]))
+        return (coord_entry, coord_exit)
 
     def default_maze(self) -> None:
         self.visual.generate_default()

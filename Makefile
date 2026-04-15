@@ -17,12 +17,13 @@ lint-strict:
 	python3 -m mypy . --strict
 
 build: 
-	pip install poetry && poetry build srcs .
+	pip install poetry && poetry build --output .
 
 name:
 	@$(PYTHON) srcs/main.py $(FILE)
 
 clean:
-	rm -rf */*/*/*__pycache__/
-	rm -f */*.xpm
+	rm -rf */*/__pycache__/
+	rm -rf .mypy_cache/
+	rm -f *.xpm
 	rm -f maze.txt

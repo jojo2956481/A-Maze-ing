@@ -1,7 +1,7 @@
 from mlx import Mlx
 from typing import Any
 from algo.maze import Maze
-from .visual_maze import VisualMaze
+from visual.visual_maze import VisualMaze
 
 
 class VisualPath:
@@ -18,6 +18,7 @@ class VisualPath:
         self.maze = maze
         self.speed = 0
         self.visual = visual
+        self.frame: int = 0
 
     def slow_path(self, data: memoryview) -> None:
         try:
@@ -25,7 +26,7 @@ class VisualPath:
         except IndexError:
             self.mlx.mlx_loop_hook(self.ptr, None, None)
             return
-        if self.frame != 10 - self.speed * 2:
+        if self.frame != 20 - self.speed * 2:
             self.frame += 1
             return
         color = bytearray([255, 255, 255, 255])
@@ -65,9 +66,9 @@ class VisualPath:
 
     def handle_path(self) -> None:
         data = self.visual.data_image[0]
+        self.frame = 0
+        self.cell: int = 0
         if self.speed:
-            self.frame = 0
-            self.cell = 0
             self.mlx.mlx_loop_hook(self.ptr, self.slow_path, data)
         else:
             self.show_path(data)
