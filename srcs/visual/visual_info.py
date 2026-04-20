@@ -1,4 +1,4 @@
-from visual.xpm.xpm_generator import create_xpm_title
+from srcs.visual.xpm.xpm_generator import create_xpm_title
 from mlx import Mlx
 from typing import Any
 
@@ -9,7 +9,6 @@ class VisualInfo:
                  infos: tuple[int, int]) -> None:
         self.mlx = mlx
         self.ptr = ptr
-        self.string = [Mlx() for i in range(10)]
         self.window = window
         self.title_coordinate = title[0]
         self.title_size = title[1]
@@ -33,6 +32,7 @@ class VisualInfo:
                                          self.infos_coordinate[0] + 10,
                                          self.infos_coordinate[1] - 40)
         self.generate_background()
+        self.mlx.mlx_do_sync(self.ptr)
         commands = ["quit: q", "change color: c", "random color: r",
                     "new maze: n", "active/stop play mode: p",
                     "change game speed: + and -", "show path: s",
@@ -45,13 +45,13 @@ class VisualInfo:
             self.mlx.mlx_string_put(self.ptr, self.window,
                                     self.infos_coordinate[0] + 20,
                                     self.infos_coordinate[1] + i,
-                                    0xFF000000, commands[z])
+                                    0, commands[z])
             i += 30
 
     def generate_background(self) -> None:
         temp = self.mlx.mlx_new_image(self.ptr, 300, 600)
         data = self.mlx.mlx_get_data_addr(temp)[0]
-        for i in range(0, len(list(data)), 4):
+        for i in range(0, 300 * 600 * 4, 4):
             if i % 1200 <= 8 or i % 1200 >= 1187:
                 data[i: i + 4] = bytearray([169, 169, 169, 255])
             elif i // 1200 <= 2 or i // 1200 >= 598:

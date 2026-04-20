@@ -1,5 +1,5 @@
 [project]
-name = "a-maze-ing"
+name = "mazegen"
 version = "0.1.0"
 description = "Maze builder, solver of the maze and visual representation"
 readme = "README.md"
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [tool.poetry]
-packages = [{include = "srcs"}]
+packages = [{include = "mazegen", from = "srcs"}]
 
 [build-system]
 requires = ["poetry-core>=2.0.0"]

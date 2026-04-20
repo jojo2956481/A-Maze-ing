@@ -62,7 +62,6 @@ def solver_all_path(entry_exit: tuple[tuple[int, int], tuple[int, int]],
     path = []
     path.append((start, None))
     stack = [(start, path)]
-
     while stack:
         current, path = stack.pop()
         i, j = current

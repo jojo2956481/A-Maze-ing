@@ -1,7 +1,7 @@
 from mlx import Mlx
 from typing import Any
-from algo.maze import Maze
-from visual.visual_maze import VisualMaze
+from srcs.mazegen.maze import Maze
+from srcs.visual.visual_maze import VisualMaze
 
 
 class VisualPath:

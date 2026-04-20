@@ -1,10 +1,10 @@
 from mlx import Mlx
-from visual.visual_info import VisualInfo
-from visual.visual_maze import VisualMaze
-from visual.visual_path import VisualPath
-from visual.visual_play import VisualPlay
-from algo.solver import solver_all_path
-from algo.maze import Maze
+from srcs.visual.visual_info import VisualInfo
+from srcs.visual.visual_maze import VisualMaze
+from srcs.visual.visual_path import VisualPath
+from srcs.visual.visual_play import VisualPlay
+from srcs.mazegen.solver import solver_all_path
+from srcs.mazegen.maze import Maze
 from typing import Any
 from enum import Enum
 
@@ -82,7 +82,7 @@ class VisualManager:
     def close_button(self, args: Any) -> None:
         self.mlx.mlx_loop_exit(self.ptr)
 
-    def keyboard_management(self, keycode: int, args: Any) -> None:
+    def keyboard_management(self, keycode: int) -> None:
         match keycode:
             case Commands.QUIT.value:
                 self.mlx.mlx_loop_exit(self.ptr)
