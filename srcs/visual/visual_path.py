@@ -2,6 +2,7 @@ from mlx import Mlx
 from typing import Any
 from srcs.mazegen.maze import Maze
 from srcs.visual.visual_maze import VisualMaze
+from time import time
 
 
 class VisualPath:
@@ -26,8 +27,7 @@ class VisualPath:
         except IndexError:
             self.mlx.mlx_loop_hook(self.ptr, None, None)
             return
-        if self.frame != 20 - self.speed * 2:
-            self.frame += 1
+        if time() - self.delay < 0.4 - (self.speed * 0.07):
             return
         color = bytearray([255, 255, 255, 255])
         cell = self.paths[self.actual_path][self.cell]
@@ -44,8 +44,8 @@ class VisualPath:
                                          self.visual.image_maze,
                                          self.coordinate[0],
                                          self.coordinate[1])
+        self.delay = time()
         self.cell += 1
-        self.frame = 0
 
     def show_path(self, data: memoryview) -> None:
         color = bytearray([255, 255, 255, 255])
@@ -66,7 +66,7 @@ class VisualPath:
 
     def handle_path(self) -> None:
         data = self.visual.data_image[0]
-        self.frame = 0
+        self.delay = time() - 1
         self.cell: int = 0
         if self.speed:
             self.mlx.mlx_loop_hook(self.ptr, self.slow_path, data)

@@ -32,16 +32,9 @@ class HandleMaze:
         self.actual_maze = 0
         self.mazes[self.actual_maze].generate_maze()
         self.visual = VisualManager(1)
-        entry_exit = self.get_entry_exit(self.data["ENTRY"], self.data["EXIT"])
+        entry_exit = (tuple(self.data["ENTRY"]), tuple(self.data["EXIT"]))
         self.visual.get_visuals(self.mazes[self.actual_maze], entry_exit)
         self.default_maze()
-
-    def get_entry_exit(self, entry: str, exit: str) -> tuple:
-        lst_entry = entry.split(",")
-        lst_exit = exit.split(",")
-        coord_entry = (int(lst_entry[0]), int(lst_entry[1]))
-        coord_exit = (int(lst_exit[0]), int(lst_exit[1]))
-        return (coord_entry, coord_exit)
 
     def default_maze(self) -> None:
         self.visual.generate_default()

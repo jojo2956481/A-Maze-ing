@@ -10,7 +10,7 @@ class KruskalMaze(Maze):
         self.height = height
         self.maze = []
         self.forty_two = []
-        self.lst_grille = []
+        self.lst_grid = []
         for i in range(height):
             ligne = []
             for j in range(width):
@@ -20,6 +20,7 @@ class KruskalMaze(Maze):
             self.maze.append(ligne)
 
     def generate_maze(self) -> None:
+        self.place_42()
         self.init_grille()
         self.generer()
 
@@ -32,9 +33,9 @@ class KruskalMaze(Maze):
                 self.maze[i][j]['E'] = False
                 self.maze[i][j]['S'] = False
                 self.maze[i][j]['W'] = False
-                self.lst_grille.append((i, j))
+                self.lst_grid.append((i, j))
 
-    def generer(self, seed=None) -> None:
+    def generer(self, seed: int | None = None) -> None:
         zone_id = 0
         for i in range(self.height):
             for j in range(self.width):
@@ -147,79 +148,3 @@ class KruskalMaze(Maze):
                     j = start_j + dj + 4
                     if 0 <= i < self.height and 0 <= j < self.width:
                         self.forty_two.append((i, j))
-
-    # def display(self, print_zones=False):
-    #     from math import floor
-    #     #alias :
-    #     w=self.width;h=self.height;c=self.maze;
-    #     #si on imprime les zones, il faut élargir la taille des couloirs
-    #     if (print_zones):
-    #         len_zone = max([max([len(str(self.maze[i][j]['zone']))
-    #                             for i in range(self.height)])
-    #                         for j in range(laby.width)])+1
-    #     inters = [' ', '╴', '╷', '┐', '╶', '─', '┌', '┬', '╵', '┘',
-    #               '│', '┤', '└', '┴', '├', '┼']
-    #     t=""
-    #     #la grille des intersections de cases est de taille (N+1)(M+1)
-    #     for i in range(h+1):
-    #         interligne=""
-    #         for j in range(w+1):
-    #             #up, right, bottom, left : les 4 parties de la croix
-    #             # "┼" #False = mur, True = pas mur
-    #             #Coins et bords:
-    #             up=False if i==0 else None
-    #             left=False if j==0 else None
-    #             right=False if j==w else None
-    #             bottom=False if i==h else None
-    #             if j==w:
-    #                 if up==None:up=not c[i-1][j-1]['E']
-    #                 if bottom==None:bottom=not c[i][j-1]['E']
-    #             if i==h:
-    #                 bottom=False
-    #                 if right==None:right=not c[i-1][j]['S']
-    #                 if left==None:left=not c[i-1][j-1]['S']
-    #             #intérieur :
-    #             if up==None:up=not c[i-1][j]['W']
-    #             if right==None:right=not c[i][j]['N']
-    #             if bottom==None:bottom=not c[i][j]['W']
-    #             if left==None:left=not c[i][j-1]['N']
-    #             # -> mot binaire à 4 bits. 16 cas qu'on a mis dans
-    #             # l'ordre dans la liste inters
-    #             # indice inters
-    #             k=-up*8+right*4+bottom*2+left
-    #             if not print_zones:
-    #                 #espacement horizontal supplémentaire
-    #                 sep= "─" if left else " "
-    #                 t+=sep+inters[k]
-    #                 if j==self.width:t+="\n"
-    #             else:
-    #                 sep= (len_zone+2)*"─" if right else (len_zone+2)*" "
-    #                     # num_zone=self.zones[self.maze[i][j]["zone"]]
-    #                     # if i -1 and num_zone <10  else "*"
-    #                 interligne += ("│" if bottom else " ") + " " * (len_sp_left + 1) + txt_num_zone + " " * (len_sp_right+1)
-    #                 t+=inters[k]+sep
-    #                 if j==self.width:
-    #                     t+="\n" + interligne + "\n"
-    #     print(t)
-
-
-# def config_maze(dictionaire):
-#     width = int(dictionaire["WIDTH"])
-#     heigt = int(dictionaire["HEIGHT"])
-#     if "SEED" in dictionaire:
-#         seed = int(dictionaire["SEED"])
-#     else:
-#         seed = None
-#     grille = maze_Kruskal(width, heigt)
-#     grille.init_grille()
-#     grille.place_42()
-
-#     grille.generer(seed)
-#     grille.display()
-#     print()
-
-
-# if __name__ == "__main__":
-#     data = pars_dict()
-#     if data:
-#         config_maze(data)

@@ -3,7 +3,7 @@ from srcs.visual.visual_info import VisualInfo
 from srcs.visual.visual_maze import VisualMaze
 from srcs.visual.visual_path import VisualPath
 from srcs.visual.visual_play import VisualPlay
-from srcs.mazegen.solver import solver_all_path
+from srcs.mazegen.solver import solver_test
 from srcs.mazegen.maze import Maze
 from typing import Any
 from enum import Enum
@@ -61,7 +61,7 @@ class VisualManager:
                     entry_exit: tuple[tuple[int, int],
                                       tuple[int, int]]) -> None:
         paths = [[value[0] for value in path] for path in
-                 solver_all_path(entry_exit, maze)]
+                 solver_test(entry_exit, maze)]
         self.maze = VisualMaze(maze, self.mlx, self.ptr,
                                self.window, self.screen["maze"], entry_exit)
         self.info = VisualInfo(self.mlx, self.ptr, self.window,
@@ -92,8 +92,8 @@ class VisualManager:
             case Commands.NEW_MAZE.value:
                 self.maze.maze.generate_maze()
                 self.path.paths = [[value[0] for value in path] for path in
-                                   solver_all_path(self.maze.entry_exit,
-                                                   self.maze.maze)]
+                                   solver_test(self.maze.entry_exit,
+                                               self.maze.maze)]
                 self.maze.refresh()
             case Commands.RANDOM_COLOR.value:
                 self.maze.random_color = not self.maze.random_color
