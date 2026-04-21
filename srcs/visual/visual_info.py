@@ -39,14 +39,15 @@ class VisualInfo:
                     "hide path: h", "previous solution:", "   - up arrow",
                     "next solution:", "   - down arrow",
                     "active/stop instant path: i", "higher path speed:",
-                    "   - right arrow", "lower path speed:", "   - left arrow"]
+                    "   - right arrow", "lower path speed:", "   - left arrow",
+                    "DFS: 1", "Kruskal: 2", "Wilson: 3"]
         i = 30
         for z in range(len(commands)):
             self.mlx.mlx_string_put(self.ptr, self.window,
                                     self.infos_coordinate[0] + 20,
                                     self.infos_coordinate[1] + i,
                                     0, commands[z])
-            i += 30
+            i += 27
 
     def generate_background(self) -> None:
         temp = self.mlx.mlx_new_image(self.ptr, 300, 600)
