@@ -31,7 +31,7 @@ class HandleMaze:
                                  int(self.data["HEIGHT"]))]
         self.actual_maze = 0
         self.mazes[self.actual_maze].generate_maze()
-        self.visual = VisualManager(1)
+        self.visual = VisualManager(3)
         entry_exit = self.get_entry_exit(self.data["ENTRY"], self.data["EXIT"])
         self.visual.get_visuals(self.mazes[self.actual_maze], entry_exit)
         self.default_maze()
