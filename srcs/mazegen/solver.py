@@ -135,7 +135,7 @@ def solver_test(entry_exit: tuple[tuple[int, int],
                                   tuple[int, int]], maze: Maze) -> list[int]:
     from time import time
     start, exit = entry_exit[0], entry_exit[1]
-    banned = set()
+    visited = {start}
     paths = []
     directions = [
             ("N", (0, -1)), ("E", (1, 0)),
@@ -147,8 +147,7 @@ def solver_test(entry_exit: tuple[tuple[int, int],
     while actual_path:
         if not actual_path[-1][2]:
             cell, _, _ = actual_path.pop()
-            if cell != start and cell != exit:
-                banned.add(cell)
+            visited.remove(cell)
             continue
         current, _, neighbors = actual_path[-1]
         if current == exit:
@@ -161,21 +160,20 @@ def solver_test(entry_exit: tuple[tuple[int, int],
         cell = maze.maze[current[1]][current[0]]
         new_pos = (current[0] + direction[1][0],
                    current[1] + direction[1][1])
-        if check_next_good(new_pos, direction, actual_path,
-                           maze, banned, cell):
+        if check_next_good(new_pos, direction,
+                           maze, visited, cell):
             actual_path.append((new_pos, direction[0], directions.copy()))
+            visited.add(new_pos)
     print("Runtime:", time() - p)
     return paths
 
 
-def check_next_good(new_pos, direction, actual_path, maze, banned, cell):
+def check_next_good(new_pos, direction, maze, visited, cell):
     if (new_pos[0] < 0 or new_pos[1] < 0 or new_pos[0] >= maze.width
             or new_pos[1] >= maze.height):
         return False
     if not cell[direction[0]]:
         return False
-    if new_pos in banned:
-        return False
-    if new_pos in [temp[0] for temp in actual_path]:
+    if new_pos in visited:
         return False
     return True
