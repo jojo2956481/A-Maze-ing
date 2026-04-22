@@ -3,16 +3,21 @@ from .maze import Maze
 
 
 class WilsonMaze(Maze):
-    def __init__(self, width: int, height: int) -> None:
-        self.width: int = width
-        self.height: int = height
-        self.forty_two = []
-        self.get_forty_two()
+    def __init__(self, width: int, height: int,
+                 entry_exit: tuple[tuple[int, int], tuple[int, int]],
+                 seed: int | None, perfect: bool) -> None:
+        """
+        instantiate parameters
+        """
+        super().__init__(width, height, entry_exit, perfect)
+        if seed is not None:
+            random.seed(seed)
 
     def generate_maze(self) -> None:
-        self.maze = [[{"N": False, "E": False, "S": False, "W": False}
-                      for _ in range(self.width)]
-                     for _ in range(self.height)]
+        """
+        method to call to generate a full new maze
+        """
+        self.generate_empty()
         self.empty = {(i, j) for j in range(self.width)
                       for i in range(self.height)}
         self.empty = self.empty.difference(set(self.forty_two))
@@ -20,50 +25,19 @@ class WilsonMaze(Maze):
         while self.empty:
             self.generate_all_rest()
 
-    def get_forty_two(self) -> None:
-        centre_i = self.height // 2
-        centre_j = self.width // 2
-
-        four = [
-            [1, 0, 0],
-            [1, 0, 0],
-            [1, 1, 1],
-            [0, 0, 1],
-            [0, 0, 1],
-        ]
-
-        two = [
-            [1, 1, 1],
-            [0, 0, 1],
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 1, 1],
-        ]
-
-        start_i = centre_i - 2
-        start_j = centre_j - 4
-
-        for di in range(len(four)):
-            for dj in range(len(four[0])):
-                if four[di][dj] == 1:
-                    i = start_i + di
-                    j = start_j + dj
-                    if 0 <= i < self.height and 0 <= j < self.width:
-                        self.forty_two.append((i, j))
-        for di in range(len(two)):
-            for dj in range(len(two[0])):
-                if two[di][dj] == 1:
-                    i = start_i + di
-                    j = start_j + dj + 4
-                    if 0 <= i < self.height and 0 <= j < self.width:
-                        self.forty_two.append((i, j))
-
     def generate_empty(self) -> None:
+        """
+        generate empty maze
+        """
         self.maze = [[{"N": False, "E": False, "S": False, "W": False}
                       for _ in range(self.width)]
                      for _ in range(self.height)]
 
     def generate_first(self) -> None:
+        """
+        generate the first part of the maze
+        take two random cell in the maze and iterate until one found another
+        """
         pos = random.choice(list(self.empty))
         end = random.choice(list(self.empty))
         visited = [pos]
@@ -86,6 +60,10 @@ class WilsonMaze(Maze):
                 return
 
     def generate_all_rest(self) -> None:
+        """
+        second part of the creation
+        get a random cell and iterate until it reaches a part of the maze
+        """
         pos = random.choice(list(self.empty))
         visited = [pos]
         while True:
@@ -107,6 +85,9 @@ class WilsonMaze(Maze):
                 return
 
     def get_new_pos(self, pos: tuple[int, int], next: str) -> tuple[int, int]:
+        """
+        get the new cell positions depending of the direction
+        """
         if (next == "N"):
             new_pos = (pos[0] - 1, pos[1])
         if (next == "E"):
@@ -118,6 +99,9 @@ class WilsonMaze(Maze):
         return new_pos
 
     def open_wall(self, visited: list[tuple[int, int]]) -> None:
+        """
+        open the walls between two cells with the list of visited cells
+        """
         for i in range(len(visited) - 1):
             if visited[i][0] - visited[i + 1][0] == 1:
                 direction = "N"
@@ -130,6 +114,9 @@ class WilsonMaze(Maze):
             self.open_neighnbor(visited[i], direction)
 
     def open_neighnbor(self, cell: tuple[int, int], direction: str) -> None:
+        """
+        open two cells determined with a cell and the cell in the direction
+        """
         if direction == "N":
             self.maze[cell[0]][cell[1]]["N"] = True
             self.maze[cell[0] - 1][cell[1]]["S"] = True
@@ -145,6 +132,9 @@ class WilsonMaze(Maze):
 
     def check_next_good(self, visited: list[tuple[int, int]],
                         next: str) -> bool:
+        """
+        check if the next cell is valid
+        """
         pos = visited[-1]
         new_pos = self.get_new_pos(pos, next)
         if (new_pos[0] >= self.height or new_pos[0] < 0 or
@@ -153,8 +143,3 @@ class WilsonMaze(Maze):
         if new_pos in self.forty_two:
             return False
         return True
-
-    def is_in_maze(self, pos: tuple[int, int]) -> bool:
-        if pos not in self.empty:
-            return True
-        return False

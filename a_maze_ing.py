@@ -1,7 +1,9 @@
 import sys
 try:
     import mlx
+    import pydantic
     mlx.Mlx()
+    pydantic.AfterValidator
 except ModuleNotFoundError as e:
     print("Error while importing:", e)
     sys.exit(0)
@@ -15,31 +17,50 @@ from typing import Any
 
 
 class Commands(Enum):
+    """
+    enum for the command that determine the algo chosen
+    """
     DFS = 65436
     KRUSKAL = 65433
     WILSON = 65435
 
 
 class HandleMaze:
+    """
+    manager of the a_maze_ing
+    """
     def __init__(self) -> None:
+        """
+        instantiate mazes, visualisation and a default maze
+        """
         self.data = parsing.pars_dict()
+        entry_exit = (tuple(self.data["ENTRY"]), tuple(self.data["EXIT"]))
         self.mazes = [DfsMaze(int(self.data["WIDTH"]),
-                              int(self.data["HEIGHT"])),
+                              int(self.data["HEIGHT"]), entry_exit,
+                              self.data["SEED"], self.data["PERFECT"]),
                       KruskalMaze(int(self.data["WIDTH"]),
-                                  int(self.data["HEIGHT"])),
+                                  int(self.data["HEIGHT"]), entry_exit,
+                                  self.data["SEED"], self.data["PERFECT"]),
                       WilsonMaze(int(self.data["WIDTH"]),
-                                 int(self.data["HEIGHT"]))]
+                                 int(self.data["HEIGHT"]), entry_exit,
+                                 self.data["SEED"], self.data["PERFECT"])]
         self.actual_maze = 0
         self.mazes[self.actual_maze].generate_maze()
-        self.visual = VisualManager(1)
-        entry_exit = (tuple(self.data["ENTRY"]), tuple(self.data["EXIT"]))
+        window = self.data["WINDOW"] if self.data["WINDOW"] else 1
+        self.visual = VisualManager(window)
         self.visual.get_visuals(self.mazes[self.actual_maze], entry_exit)
         self.default_maze()
 
     def default_maze(self) -> None:
+        """
+        generate the default window
+        """
         self.visual.generate_default()
 
     def keyboard_management(self, keycode: int, *args: Any) -> None:
+        """
+        handle the algorithm change or other maze commands
+        """
         if keycode not in Commands:
             self.visual.keyboard_management(keycode)
         else:
@@ -53,6 +74,9 @@ class HandleMaze:
             self.visual.maze.maze = self.mazes[self.actual_maze]
 
     def looping(self) -> None:
+        """
+        handle the loop of the mlx
+        """
         self.visual.mlx.mlx_key_hook(self.visual.window,
                                      self.keyboard_management, None)
         self.visual.mlx.mlx_hook(self.visual.window, 33, 0,

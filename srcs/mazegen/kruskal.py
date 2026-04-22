@@ -1,41 +1,45 @@
 import random
 from .maze import Maze
-# # from collections import deque
-# from srcs.transform_data.parsing import pars_dict
 
 
 class KruskalMaze(Maze):
-    def __init__(self, width: int, height: int) -> None:
-        self.width = width
-        self.height = height
-        self.maze = []
-        self.forty_two = []
-        self.lst_grid = []
-        for i in range(height):
-            ligne = []
-            for j in range(width):
-                cellule = {'N': False, 'E': False, 'S': False,
-                           'W': False, 'zone': 1}
-                ligne.append(cellule)
-            self.maze.append(ligne)
+    """
+    class that inherits from class maze to
+    create all methode of maze building's
+    """
+    def __init__(self, width: int, height: int, entry_exit,
+                 seed: int | None, perfect: bool) -> None:
+        """
+        method to init all atributs
+        """
+        super().__init__(width, height, entry_exit, perfect)
+        if seed is not None:
+            random.seed(seed)
 
-    def generate_maze(self) -> None:
-        self.place_42()
-        self.init_grille()
-        self.generer()
+    def generate_maze(self, seed: int | None = None) -> None:
+        """
+        method to manage all methods of the class
+        """
+        self.init_grid()
+        self.generer(seed)
 
-    def init_grille(self) -> None:
+    def init_grid(self) -> None:
+        """
+        method to init the gride (cellule of maze)
+        """
+        self.maze = [[{"N": False, "E": False, "S": False, "W": False}
+                      for _ in range(self.width)]
+                     for _ in range(self.height)]
         zone_id = 0
         for i in range(self.height):
             for j in range(self.width):
                 self.maze[i][j]['zone'] = zone_id
-                self.maze[i][j]['N'] = False
-                self.maze[i][j]['E'] = False
-                self.maze[i][j]['S'] = False
-                self.maze[i][j]['W'] = False
                 self.lst_grid.append((i, j))
 
     def generer(self, seed: int | None = None) -> None:
+        """
+        method to open wall
+        """
         zone_id = 0
         for i in range(self.height):
             for j in range(self.width):
@@ -61,6 +65,9 @@ class KruskalMaze(Maze):
             self.fusionner(i, j, direction)
 
     def fusionner(self, i: int, j: int, dir: str) -> bool:
+        """
+        method to find if zone are close
+        """
         if not (0 <= i < self.height and 0 <= j < self.width):
             return False
         if (i, j) in self.forty_two:
@@ -110,41 +117,3 @@ class KruskalMaze(Maze):
                 if self.maze[x][y]['zone'] == zone2:
                     self.maze[x][y]['zone'] = zone1
         return True
-
-    def place_42(self) -> None:
-        centre_i = self.height // 2
-        centre_j = self.width // 2
-
-        four = [
-            [1, 0, 0],
-            [1, 0, 0],
-            [1, 1, 1],
-            [0, 0, 1],
-            [0, 0, 1],
-        ]
-
-        two = [
-            [1, 1, 1],
-            [0, 0, 1],
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 1, 1],
-        ]
-
-        start_i = centre_i - 2
-        start_j = centre_j - 4
-
-        for di in range(len(four)):
-            for dj in range(len(four[0])):
-                if four[di][dj] == 1:
-                    i = start_i + di
-                    j = start_j + dj
-                    if 0 <= i < self.height and 0 <= j < self.width:
-                        self.forty_two.append((i, j))
-        for di in range(len(two)):
-            for dj in range(len(two[0])):
-                if two[di][dj] == 1:
-                    i = start_i + di
-                    j = start_j + dj + 4
-                    if 0 <= i < self.height and 0 <= j < self.width:
-                        self.forty_two.append((i, j))

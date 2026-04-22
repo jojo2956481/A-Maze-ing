@@ -1,59 +1,61 @@
 import random
-from typing import Any
-# from solver import solver_all_path
+from .maze import Maze
 # from srcs.transform_data.parsing import pars_dict
 # from .solver import solver_bfs, solver_all_path
 
 
-class DfsMaze():
-    def __init__(self, width: int, height: int) -> None:
-        self.width: int = width
-        self.height: int = height
-        self.maze: list[list[dict[str, Any]]] = []
-        self.forty_two: list[tuple[int, int]] = []
-        self.lst_grille: list[tuple[int, int]] = []
-        for i in range(height):
-            ligne: list[dict[str, Any]] = []
-            for j in range(width):
-                cellule = {'N': False, 'E': False, 'S': False,
-                           'W': False, 'zone': 1}
-                ligne.append(cellule)
-            self.maze.append(ligne)
-
-    def generate_maze(self, seed: int | None = None) -> None:
-        self.init_grille()
-        self.place_42()
+class DfsMaze(Maze):
+    """
+    class that inherits from class maze to
+    create all methode of maze building's
+    """
+    def __init__(self, width: int, height: int, entry_exit,
+                 seed: int | None, perfect: bool) -> None:
+        """
+        method to init all atributs
+        """
+        super().__init__(width, height, entry_exit, perfect)
         if seed is not None:
             random.seed(seed)
+
+    def generate_maze(self) -> None:
+        """
+        method to manage all methods of the class
+        """
+        self.init_grid()
         i, j = self.start()
         self.dfs_recursive(i, j)
+        if not self.perfect:
+            self.imperfect_maze()
 
-    def execute_dfs(self, seed: int | None = None) -> None:
-        if seed is not None:
-            random.seed(seed)
-        i, j = self.start()
-        self.dfs_recursive(i, j)
-
-    def init_grille(self) -> None:
+    def init_grid(self) -> None:
+        """
+        method to init the gride (cellule of maze)
+        """
+        self.maze = [[{"N": False, "E": False, "S": False, "W": False}
+                      for _ in range(self.width)]
+                     for _ in range(self.height)]
         zone_id = 0
         for i in range(self.height):
             for j in range(self.width):
                 self.maze[i][j]['zone'] = zone_id
-                self.maze[i][j]['N'] = False
-                self.maze[i][j]['E'] = False
-                self.maze[i][j]['S'] = False
-                self.maze[i][j]['W'] = False
-                self.lst_grille.append((i, j))
+                self.lst_grid.append((i, j))
 
     def start(self) -> tuple[int, int]:
+        """
+        method to create the start of maze
+        """
         while True:
-            i, j = random.choice(self.lst_grille)
+            i, j = random.choice(self.lst_grid)
             if (i, j) not in self.forty_two:
                 self.maze[i][j]["zone"] = 1
                 return i, j
 
     def find_voisin(self, direction: str,
                     i: int, j: int) -> tuple[int, int, str, str]:
+        """
+        method to find the voisin of current cellule
+        """
 
         ni, nj = 0, 0
         if direction == 'N':
@@ -76,6 +78,9 @@ class DfsMaze():
         return ni, nj, mur_cell, mur_voisin
 
     def dfs_recursive(self, i: int, j: int) -> None:
+        """
+        hearth of olgo dfs: open wall using batracking
+        """
         stack = [(i, j)]
         self.maze[i][j]["zone"] = 1
         while stack:
@@ -105,79 +110,69 @@ class DfsMaze():
             if not moved:
                 stack.pop()
 
-    def place_42(self) -> None:
-        centre_i = self.height // 2
-        centre_j = (
-            self.width // 2 + 1 if self.width % 2 == 1 else self.width // 2)
+    def solver_all_path(self) -> list[list]:
+        """
+        solver to find all path of maze
+        """
+        start = self.entry_exit[0]
+        goal = self.entry_exit[1]
+        all_path = []
+        path = []
+        path.append((start, None))
+        stack = [(start, path)]
 
-        four = [
-            [1, 0, 0],
-            [1, 0, 0],
-            [1, 1, 1],
-            [0, 0, 1],
-            [0, 0, 1],
-        ]
-
-        two = [
-            [1, 1, 1],
-            [0, 0, 1],
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 1, 1],
-        ]
-
-        start_i = centre_i - 2
-        start_j = centre_j - 4
-
-        for di in range(len(four)):
-            for dj in range(len(four[0])):
-                if four[di][dj] == 1:
-                    i = start_i + di
-                    j = start_j + dj
-                    if 0 <= i < self.height and 0 <= j < self.width:
-                        self.forty_two.append((i, j))
-        for di in range(len(two)):
-            for dj in range(len(two[0])):
-                if two[di][dj] == 1:
-                    i = start_i + di
-                    j = start_j + dj + 4
-                    if 0 <= i < self.height and 0 <= j < self.width:
-                        self.forty_two.append((i, j))
+        while stack:
+            current, path = stack.pop()
+            i, j = current
+            if current == goal:
+                all_path.append(path.copy())
+                continue
+            cell = self.maze[i][j]
+            directions = [
+                ('N', (-1, 0)),
+                ('S', (1, 0)),
+                ('E', (0, 1)),
+                ('W', (0, -1))
+            ]
+            for direction, (di, dj) in directions:
+                if cell[direction]:
+                    ni, nj = i + di, j + dj
+                    neighbor = (ni, nj)
+                    if 0 <= ni < self.height and 0 <= nj < self.width:
+                        if neighbor not in [p[0] for p in path]:
+                            stack.append(
+                                (neighbor, path +
+                                 [(neighbor, direction)]))
+        # print(len(sorted(all_path, key=lambda x: len(x))))
+        return sorted(all_path, key=lambda x: len(x))
 
     def imperfect_maze(self) -> None:
-        mur = 0
-        for ligne in self.maze:
-            for cell in ligne:
-                for value in cell.values():
-                    if value is False:
-                        mur += 1
-        mur = mur // 2
-        mur = mur - (self.height + self.width)
-        mur = mur - 55
-        # result = int(mur * 0.5)
+        """
+        broke wall to make maze imperfect
+        """
         directions = {
             'N': (-1, 0, 'S'),
             'S': (1, 0, 'N'),
             'E': (0, 1, 'W'),
             'W': (0, -1, 'E')
         }
-        count = 0
-        while (count < 0):
+        count = 1
+        while (count < 3):
             i = random.randint(0, self.height - 1)
             j = random.randint(0, self.width - 1)
-
             dir_name = random.choice(list(directions.keys()))
             di, dj, opposite = directions[dir_name]
-
             ni, nj = i + di, j + dj
             if 0 <= ni < self.height and 0 <= nj < self.width:
                 if not self.maze[i][j][dir_name]:
                     if self.maze[i][j]["zone"] != 0:
                         if self.maze[ni][nj]["zone"] != 0:
-                            if sum(1 for v in self.maze[i][j].values()
-                                   if not v) >= 1:
-                                if sum(1 for v in self.maze[ni][nj].values()
-                                       if not v) >= 1:
 
-                                    self.maze[i][j][dir_name] = True
-                                    self.maze[ni][nj][opposite] = True
+                            self.maze[i][j][dir_name] = True
+                            self.maze[ni][nj][opposite] = True
+                            solution = self.solver_all_path()
+                            if len(solution) <= count:
+                                self.maze[i][j][dir_name] = False
+                                self.maze[ni][nj][opposite] = False
+                            else:
+                                count += 1

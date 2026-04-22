@@ -61,14 +61,15 @@ def solver_bfs(entry_exit: tuple[tuple[int, int], tuple[int, int]],
 
 def solver_all_path(entry_exit: tuple[tuple[int, int], tuple[int, int]],
                     maze: Maze) -> list[list]:
-    # import time
-    # p = time.time()
-    start = entry_exit[0]
-    goal = entry_exit[1]
+    import time
+    p = time.time()
+    start = (entry_exit[0][1], entry_exit[0][0])
+    goal = (entry_exit[1][1], entry_exit[1][0])
     all_path = []
     path = []
     path.append((start, None))
     stack = [(start, path)]
+    banned = get_banned_cells(maze, start, goal)
     while stack:
         current, path = stack.pop()
         i, j = current
@@ -87,11 +88,11 @@ def solver_all_path(entry_exit: tuple[tuple[int, int], tuple[int, int]],
                 ni, nj = i + di, j + dj
                 neighbor = (ni, nj)
                 if 0 <= ni < maze.height and 0 <= nj < maze.width:
-                    if neighbor not in [p[0] for p in path]:
+                    if neighbor not in [p[0] for p in path] and neighbor not in banned:
                         stack.append((neighbor, path +
                                       [(neighbor, direction)]))
-    # print(time.time() - p)
-    return sorted(all_path, key=lambda x: len(x))
+    print(time.time() - p)
+    return [list(banned)]
 
 
 def get_banned_cells(maze: Maze, start, end):
@@ -113,7 +114,6 @@ def get_banned_cells(maze: Maze, start, end):
             connection_count[pos] = count
             if count == 1 and pos != start and pos != end:
                 stack.append(pos)
-
     while stack:
         current = stack.pop()
         if current in banned:
@@ -134,19 +134,21 @@ def get_banned_cells(maze: Maze, start, end):
 def solver_test(entry_exit: tuple[tuple[int, int],
                                   tuple[int, int]], maze: Maze) -> list[int]:
     from time import time
-    banned = get_banned_cells(maze, entry_exit[0], entry_exit[1])
+    start, exit = entry_exit[0], entry_exit[1]
+    banned = set()
     paths = []
     directions = [
             ("N", (0, -1)), ("E", (1, 0)),
             ("S", (0, 1)), ("W", (-1, 0))
         ]
-    actual_path = [[entry_exit[0], None, directions.copy()]]
+    actual_path = [[start, None, directions.copy()]]
     exit = entry_exit[1]
     p = time()
-    print(banned)
     while actual_path:
         if not actual_path[-1][2]:
             cell, _, _ = actual_path.pop()
+            if cell != start and cell != exit:
+                banned.add(cell)
             continue
         current, _, neighbors = actual_path[-1]
         if current == exit:
@@ -155,22 +157,21 @@ def solver_test(entry_exit: tuple[tuple[int, int],
             actual_path.pop()
             continue
         direction = random.choice(neighbors)
-        actual_path[-1][2].pop(actual_path[-1][2].index(direction))
+        actual_path[-1][2].remove(direction)
+        cell = maze.maze[current[1]][current[0]]
         new_pos = (current[0] + direction[1][0],
                    current[1] + direction[1][1])
         if check_next_good(new_pos, direction, actual_path,
-                           maze, banned):
+                           maze, banned, cell):
             actual_path.append((new_pos, direction[0], directions.copy()))
-    print(paths)
     print("Runtime:", time() - p)
     return paths
 
 
-def check_next_good(new_pos, direction, actual_path, maze, banned):
+def check_next_good(new_pos, direction, actual_path, maze, banned, cell):
     if (new_pos[0] < 0 or new_pos[1] < 0 or new_pos[0] >= maze.width
             or new_pos[1] >= maze.height):
         return False
-    cell = maze.maze[new_pos[1]][new_pos[0]]
     if not cell[direction[0]]:
         return False
     if new_pos in banned:

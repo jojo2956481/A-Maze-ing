@@ -5,9 +5,15 @@ from typing import Any
 
 
 class VisualMaze():
+    """
+    class that handle the visual representation of the maze
+    """
     def __init__(self, maze: Maze, mlx: Mlx, ptr: Any, window: Any,
                  value: tuple[tuple[int, int], tuple[int, int]],
                  entry_exit: tuple[tuple[int, int], tuple[int, int]]) -> None:
+        """
+        instantiate mlx, coordinate values and the maze
+        """
         self.maze = maze
         self.mlx = mlx
         self.ptr = ptr
@@ -20,6 +26,9 @@ class VisualMaze():
         self.entry_exit = entry_exit
 
     def starting_colors(self) -> list[tuple[str, str]]:
+        """
+        define default color that is chosen
+        """
         return [("0xFF00FFFF", "0xFF7393B3"),  # Aqua / Blue Gray
                 ("0xFF0F52BA", "0xFF87CEEB"),  # Saphire Blue / Sky Blue
                 ("0xFF800020", "0xFFE97451"),  # Burgundy / Burnt Sienna
@@ -32,6 +41,9 @@ class VisualMaze():
                 ("0xFFDAA520", "0xFFFFDEAD")]  # Goldenrod / Navajo White
 
     def get_color(self) -> None:
+        """
+        get a new color that is either chosen or randomize
+        """
         if self.random_color:
             color_hexa = (hex(random.randrange(0xFF000000, 0xFFFFFFFF)),
                           hex(random.randrange(0xFF000000, 0xFFFFFFFF)))
@@ -52,6 +64,9 @@ class VisualMaze():
 
     def print_limits(self, size: int, limits: list[bool], data: memoryview,
                      index: int, walls: list[tuple[bool, bool]]) -> int:
+        """
+        handle the ceilling and the floor in the image buffer
+        """
         j = index
         for n in range(len(limits)):
             for i in range(0, size * 4, 4):
@@ -68,6 +83,9 @@ class VisualMaze():
 
     def print_walls(self, size: int, walls: list[tuple[bool, bool]],
                     data: memoryview, index: int) -> int:
+        """
+        handle the walls in the image buffer
+        """
         j = index
         for n in range(0, size - 2):
             for cell in walls:
@@ -89,6 +107,9 @@ class VisualMaze():
         return j
 
     def color_forty_two(self) -> None:
+        """
+        color all cells that are part of the forty two
+        """
         data = self.data_image[0]
         size_line = self.size_case * len(self.maze.maze[0]) * 4
         for case in self.maze.forty_two:
@@ -100,6 +121,9 @@ class VisualMaze():
                 index += size_line
 
     def refresh(self) -> None:
+        """
+        define the buffer of the image of the maze with the maze that it has
+        """
         data = self.data_image[0]
         index = 0
         for line in self.maze.maze:
@@ -111,14 +135,20 @@ class VisualMaze():
             index = self.print_walls(self.size_case, walls, data, index)
             index = self.print_limits(self.size_case, floor, data,
                                       index, walls)
+        self.color_forty_two()
+        self.put_entry_exit(self.entry_exit[0], [0, 255, 0, 255])
+        self.put_entry_exit(self.entry_exit[1], [0, 0, 255, 255])
         self.show_to_window()
 
     def put_entry_exit(self, cell: tuple[int, int],
                        color: list[int]) -> None:
+        """
+        color the entry or the exit with the given color
+        """
         data = self.data_image[0]
         size_line = self.size_case * len(self.maze.maze[0]) * 4
-        index = (size_line * self.size_case * cell[0]) + (self.size_case *
-                                                          cell[1] * 4)
+        index = (size_line * self.size_case * cell[1]) + (self.size_case *
+                                                          cell[0] * 4)
         for i in range(self.size_case):
             for i in range(0, self.size_case * 4, 4):
                 if data[index + i: index + i + 4] == self.actual_color[1]:
@@ -126,18 +156,24 @@ class VisualMaze():
             index += size_line
 
     def show_to_window(self) -> None:
-        self.color_forty_two()
-        self.put_entry_exit(self.entry_exit[0], [0, 255, 0, 255])
-        self.put_entry_exit(self.entry_exit[1], [0, 0, 255, 255])
+        """
+        put the buffer of the maze's image to the window
+        """
         self.mlx.mlx_put_image_to_window(self.ptr, self.window,
                                          self.image_maze, self.coordinate[0],
                                          self.coordinate[1])
 
     def define_size_case(self, size_maze: tuple[int, int]) -> None:
+        """
+        determine the size of the case depending of the size of the maze
+        """
         self.size_case = int(size_maze[0]
-                             / self.maze.width)
+                             / max(self.maze.width, self.maze.height))
 
     def create_maze_image(self) -> None:
+        """
+        create the image buffer of the maze depending of the size
+        """
         self.image_maze = self.mlx.mlx_new_image(self.ptr,
                                                  int(self.size_case
                                                      * self.maze.width),

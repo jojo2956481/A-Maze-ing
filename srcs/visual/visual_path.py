@@ -6,10 +6,16 @@ from time import time
 
 
 class VisualPath:
+    """
+    class that handle the visual of the paths
+    """
     def __init__(self, mlx: Mlx, ptr: Any, window: Any,
                  coordinate: tuple[int, int],
                  paths: list[list[tuple[int, int]]],
                  maze: Maze, visual: VisualMaze) -> None:
+        """
+        instantiate the mlx, the paths and the maze
+        """
         self.mlx = mlx
         self.ptr = ptr
         self.window = window
@@ -22,6 +28,9 @@ class VisualPath:
         self.frame: int = 0
 
     def slow_path(self, data: memoryview) -> None:
+        """
+        print the solution at a speed depending of the given speed
+        """
         try:
             cell = self.paths[self.actual_path][self.cell]
         except IndexError:
@@ -48,11 +57,14 @@ class VisualPath:
         self.cell += 1
 
     def show_path(self, data: memoryview) -> None:
+        """
+        print the paths
+        """
         color = bytearray([255, 255, 255, 255])
         for cell in self.paths[self.actual_path]:
             size_line = self.visual.size_case * len(self.maze.maze[0]) * 4
             pos = (size_line * self.visual.size_case *
-                   cell[0]) + (self.visual.size_case * cell[1] * 4)
+                   cell[1]) + (self.visual.size_case * cell[0] * 4)
             for i in range(self.visual.size_case):
                 for i in range(0, self.visual.size_case * 4, 4):
                     if (data[pos + i: pos + i + 4] ==
@@ -65,6 +77,9 @@ class VisualPath:
                                              self.coordinate[1])
 
     def handle_path(self) -> None:
+        """
+        handle the instante mode or slow mode
+        """
         data = self.visual.data_image[0]
         self.delay = time() - 1
         self.cell: int = 0

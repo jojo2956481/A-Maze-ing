@@ -1,4 +1,7 @@
 def create_xpm_title(text: str, filename: str, size: int) -> None:
+    """
+    create a xpm file with a given word and given size
+    """
     chars = {"A": [" AAA ", "A   A", "AAAAA", "A   A", "A   A"],
              "M": ["M   M", "MM MM", "M M M", "M   M", "M   M"],
              "Z": ["ZZZZZ", "   Z ", "  Z  ", " Z   ", "ZZZZZ"],

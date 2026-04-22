@@ -5,11 +5,17 @@ from srcs.visual.visual_maze import VisualMaze
 
 
 class VisualPlay:
+    """
+    class that handle the play mode
+    """
     def __init__(self, mlx: Mlx, ptr: Any, window: Any, maze: Maze,
                  size_case: int,
                  entry_exit: tuple[tuple[int, int], tuple[int, int]],
                  maze_coordinate: tuple[int, int],
                  visual_maze: VisualMaze) -> None:
+        """
+        instantiate mlx, coordinate and maze
+        """
         self.mlx = mlx
         self.ptr = ptr
         self.window = window
@@ -24,6 +30,9 @@ class VisualPlay:
         self.game_speed = 1
 
     def create_player(self) -> None:
+        """
+        create a image for the player
+        """
         self.size = int(self.size_case * 0.7)
         self.player = self.mlx.mlx_new_image(self.ptr, self.size,
                                              self.size)
@@ -32,6 +41,9 @@ class VisualPlay:
             data[i: i + 4] = bytearray([52, 52, 52, 255])
 
     def is_in_maze(self, mouse: tuple[int, int]) -> bool:
+        """
+        check if the mouse is in the maze
+        """
         try:
             if (mouse[0] >= 0 and
                     mouse[0] <= self.maze_len[0] * self.size_case and
@@ -45,6 +57,10 @@ class VisualPlay:
             return self.is_in_maze(mouse)
 
     def get_direction(self, mouse: tuple[int, int]) -> str:
+        """
+        determine the position the player should go, depending on the
+        mouse position and the player position
+        """
         new_pos = ((mouse[0] - self.coordinate[0]) - self.size // 2,
                    (mouse[1] - self.coordinate[1]) - self.size // 2)
         if abs(new_pos[0]) > abs(new_pos[1]):
@@ -60,6 +76,9 @@ class VisualPlay:
         return direction
 
     def check_north(self, new_pos: tuple[int, int]) -> bool:
+        """
+        check if the player can go to the north
+        """
         corners = ((new_pos[0], new_pos[1]),
                    (new_pos[0] + self.size - 1, new_pos[1]))
         cells = (self.maze.maze[int(corners[0][1] / self.size_case)]
@@ -81,6 +100,9 @@ class VisualPlay:
         return True
 
     def check_est(self, new_pos: tuple[int, int]) -> bool:
+        """
+        check if the player can go to the est
+        """
         corners = ((new_pos[0] + self.size - 1, new_pos[1]),
                    (new_pos[0] + self.size - 1, new_pos[1] + self.size - 1))
         cells = (self.maze.maze[int(corners[0][1] / self.size_case)]
@@ -102,6 +124,9 @@ class VisualPlay:
         return True
 
     def check_south(self, new_pos: tuple[int, int]) -> bool:
+        """
+        check if the player can go to the south
+        """
         corners = ((new_pos[0], new_pos[1] + self.size - 1),
                    (new_pos[0] + self.size - 1, new_pos[1] + self.size - 1))
         cells = (self.maze.maze[int(corners[0][1] / self.size_case)]
@@ -123,6 +148,9 @@ class VisualPlay:
         return True
 
     def check_west(self, new_pos: tuple[int, int]) -> bool:
+        """
+        check if the player can go to the west
+        """
         corners = ((new_pos[0], new_pos[1]),
                    (new_pos[0], new_pos[1] + self.size - 1))
         cells = (self.maze.maze[int(corners[0][1] / self.size_case)]
@@ -144,6 +172,9 @@ class VisualPlay:
         return True
 
     def new_pos_valid(self, new_pos: tuple[int, int], direction: str) -> bool:
+        """
+        call the check method depending of the direction
+        """
         if direction == "N":
             return self.check_north(new_pos)
         elif direction == "E":
@@ -154,6 +185,9 @@ class VisualPlay:
             return self.check_west(new_pos)
 
     def move_player(self, direction: str) -> None:
+        """
+        determine the new player position of the move
+        """
         if direction == "N":
             new_pos = (self.coordinate[0], self.coordinate[1] - 1)
         elif direction == "E":
@@ -166,6 +200,10 @@ class VisualPlay:
             self.coordinate = new_pos
 
     def play(self, params: Any) -> None:
+        """
+        check if play mode is active
+        try to move the player if posible and print the player to window
+        """
         if self.playmod and self.size <= self.size_case - 2:
             for i in range(self.game_speed):
                 _, x, y = self.mlx.mlx_mouse_get_pos(self.window)

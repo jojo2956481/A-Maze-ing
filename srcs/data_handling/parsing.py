@@ -4,6 +4,9 @@ from pydantic import Field, BaseModel, model_validator, ValidationError
 
 
 class KeyValidation(BaseModel):
+    """
+    class with pydantic 'BaseModel' to check key and value
+    """
     WIDTH: int = Field(ge=9)
     HEIGHT: int = Field(ge=7)
     ENTRY: str
@@ -15,20 +18,30 @@ class KeyValidation(BaseModel):
 
     @model_validator(mode="after")
     def model_validator(self) -> Any:
+        """
+        validation of value
+        """
         en_x, en_y = map(int, self.ENTRY.split(","))
         ex_x, ex_y = map(int, self.EXIT.split(","))
         if en_x < 0 or en_y < 0:
             raise ValueError("entry can't be below 0")
+        if en_x > self.HEIGHT or en_y > self.WIDTH:
+            raise ValueError("entry can't be above width or height")
         if ex_x < 0 or ex_y < 0:
             raise ValueError("exit can't be below 0")
-        if ex_x > self.WIDTH or ex_y > self.HEIGHT:
-            raise ValueError("exit can´t be above width or height")
+        if ex_x > self.HEIGHT or ex_y > self.WIDTH:
+            raise ValueError("exit can't be above width or height")
         if self.OUTPUT_FILE.endswith('.txt\n'):
             raise ValueError("output file must be ending by '.txt'")
+        if ex_y == en_y and en_x == ex_x:
+            raise ValueError("entry can't be same than exit")
         else:
             return self
 
     def return_dict(self) -> dict[str, Any]:
+        """
+        create dict of data config after validation
+        """
         config_dict: dict[str, Any] = {}
         config_dict["WIDTH"] = self.WIDTH
         config_dict["HEIGHT"] = self.HEIGHT
@@ -37,10 +50,14 @@ class KeyValidation(BaseModel):
         config_dict["PERFECT"] = self.PERFECT
         config_dict["WINDOW"] = self.WINDOW
         config_dict["SEED"] = self.SEED
+        config_dict["OUTPUT_FILE"] = self.OUTPUT_FILE
         return config_dict
 
 
 def read_file() -> tuple[list[str], str]:
+    """
+    function take arg 'file_name' and read file
+    """
     args = sys.argv[1:]
     file_name = sys.argv[1]
     if len(args) != 1:
@@ -57,6 +74,12 @@ def read_file() -> tuple[list[str], str]:
 
 
 def pars_args(args: list[str]) -> dict[str, Any]:
+    """
+    function to pars arg like dict[key, value] and check if keys exists
+    """
+    key: list[str] = [
+        "WIDTH", "HEIGHT", "ENTRY",
+        "EXIT", "PERFECT", "WINDOW", "SEED", "OUTPUT_FILE"]
     inventory: dict[str, Any] = {}
     if args:
         try:
@@ -64,6 +87,8 @@ def pars_args(args: list[str]) -> dict[str, Any]:
                 if not item or item.startswith("#"):
                     continue
                 name, value = item.split("=")
+                if name not in key:
+                    raise ValueError(f"key: '{name}' can't be in config file")
                 inventory[name] = value.strip()
         except Exception as e:
             raise ValueError(f"error : {e}")
@@ -71,6 +96,9 @@ def pars_args(args: list[str]) -> dict[str, Any]:
 
 
 def pars_dict() -> dict[str, Any] | None:
+    """
+    manage all fuction of parsing and return the right dict of data
+    """
     try:
         data, file_name = read_file()
         data_dict = pars_args(data)

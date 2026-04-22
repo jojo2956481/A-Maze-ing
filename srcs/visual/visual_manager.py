@@ -10,6 +10,9 @@ from enum import Enum
 
 
 class Commands(Enum):
+    """
+    Enums for every maze commands that is handle, it is a mlx representation
+    """
     QUIT = 113
     NEXT_COLOR = 99
     NEW_MAZE = 110
@@ -27,7 +30,15 @@ class Commands(Enum):
 
 
 class VisualManager:
+    """
+    handle mlx interaction (keyboard or mouse) and generate every given
+    instruction that is handled
+    it manages the infos, the maze, the play mode and the paths
+    """
     def __init__(self, window_size: int) -> None:
+        """
+        instantiate mlx and window size
+        """
         self.mlx = Mlx()
         self.ptr = self.mlx.mlx_init()
         self.handle_screen_size(window_size)
@@ -37,6 +48,9 @@ class VisualManager:
                                               "A-maze-ing")
 
     def handle_screen_size(self, window_size: int) -> None:
+        """
+        define the window size with the given parameter
+        """
         screen_size = self.mlx.mlx_get_screen_size(self.ptr)
         self.screen: dict[str, Any] = {
             "window": (int(screen_size[1] // 2.5 * (1 + 0.4 *
@@ -60,6 +74,9 @@ class VisualManager:
     def get_visuals(self, maze: Maze,
                     entry_exit: tuple[tuple[int, int],
                                       tuple[int, int]]) -> None:
+        """
+        instantiate every visual class with their parameters
+        """
         paths = [[value[0] for value in path] for path in
                  solver_test(entry_exit, maze)]
         self.maze = VisualMaze(maze, self.mlx, self.ptr,
@@ -75,14 +92,24 @@ class VisualManager:
                                self.maze)
 
     def generate_default(self) -> None:
+        """
+        generate the default window
+        """
         self.info.print_info()
         self.maze.create_maze_image()
         self.maze.refresh()
 
     def close_button(self, args: Any) -> None:
+        """
+        method to close the window with the button
+        """
         self.mlx.mlx_loop_exit(self.ptr)
 
     def keyboard_management(self, keycode: int) -> None:
+        """
+        method that is called when a key is pressed
+        call the matching method for the given keycode
+        """
         match keycode:
             case Commands.QUIT.value:
                 self.mlx.mlx_loop_exit(self.ptr)

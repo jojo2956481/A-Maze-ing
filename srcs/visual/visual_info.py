@@ -4,9 +4,15 @@ from typing import Any
 
 
 class VisualInfo:
+    """
+    create and put on window title and commands
+    """
     def __init__(self, mlx: Mlx, ptr: Any, window: Any,
                  title: tuple[tuple[int, int], int],
                  infos: tuple[int, int]) -> None:
+        """
+        instantiate mlx and coord infos
+        """
         self.mlx = mlx
         self.ptr = ptr
         self.window = window
@@ -15,14 +21,23 @@ class VisualInfo:
         self.infos_coordinate = infos
 
     def print_info(self) -> None:
+        """
+        call the method that print the infos
+        """
         self.generate_title()
         self.generate_commands()
 
     def generate_title(self) -> None:
+        """
+        create xpm file of the size given for the word given
+        """
         create_xpm_title("A-maze-ing", "amazing.xpm", self.title_size)
         create_xpm_title("Commands", "commands.xpm", 5)
 
     def generate_commands(self) -> None:
+        """
+        put on window text and all image that was created
+        """
         image = self.mlx.mlx_xpm_file_to_image(self.ptr, "amazing.xpm")
         self.mlx.mlx_put_image_to_window(self.ptr, self.window, image[0],
                                          self.title_coordinate[0],
@@ -50,6 +65,9 @@ class VisualInfo:
             i += 27
 
     def generate_background(self) -> None:
+        """
+        create a image for the background of the commands
+        """
         temp = self.mlx.mlx_new_image(self.ptr, 300, 600)
         data = self.mlx.mlx_get_data_addr(temp)[0]
         for i in range(0, 300 * 600 * 4, 4):
