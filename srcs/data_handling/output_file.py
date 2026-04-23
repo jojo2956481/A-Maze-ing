@@ -2,7 +2,7 @@ from srcs.mazegen.maze import Maze
 from typing import Any
 
 
-class output_file():
+class OutputFile():
     """
     class for the output file method
     """
@@ -17,7 +17,7 @@ class output_file():
         self.exit = maze.exit
         self.maze: list[list[dict[str, Any]]] = maze.maze
 
-    def return_exa(self) -> str:
+    def return_hexa(self) -> str:
         """
         convert the cells of the maze from binary to hexadecimal
         """
@@ -43,20 +43,21 @@ class output_file():
         try:
             with open(name, "w") as f:
                 f.write(hexa + "\n\n")
-                f.write(str(self.entry) + "\n")
-                f.write(str(self.exit) + "\n")
+                f.write(f"{self.entry[0]},{self.entry[1]}" + "\n")
+                f.write(f"{self.exit[0]},{self.exit[1]}" + "\n")
                 f.write(path)
         except IOError as e:
             print(f"File cannot be opened : {e}")
 
 
-def create_file(maze: Maze, name: str, path: str):
+def create_file(maze: Maze, name: str) -> None:
     """
     function to manage all method to create output file
     """
-    file = output_file()
+    path = ""
+    for value in maze.solver()[0][1:]:
+        path += value[1]
+    file = OutputFile()
     file.take_arg(maze)
-    hexa = file.return_exa()
+    hexa = file.return_hexa()
     file.make_file(name, path, hexa)
-
-

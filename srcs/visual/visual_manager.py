@@ -1,12 +1,12 @@
-from mlx import Mlx
+from mlx import Mlx  # type: ignore
 from srcs.visual.visual_info import VisualInfo
 from srcs.visual.visual_maze import VisualMaze
 from srcs.visual.visual_path import VisualPath
 from srcs.visual.visual_play import VisualPlay
-from srcs.mazegen.solver import solver_test
 from srcs.mazegen.maze import Maze
 from typing import Any
 from enum import Enum
+from srcs.data_handling.output_file import create_file
 
 
 class Commands(Enum):
@@ -20,6 +20,7 @@ class Commands(Enum):
     PLAYMODE = 112
     GAME_SPEED_HIGH = 61
     GAME_SPEED_LOW = 45
+    RESTART = 98
     SHOW_PATH = 115
     HIDE_PATH = 104
     INSTANT_MODE = 105
@@ -35,10 +36,11 @@ class VisualManager:
     instruction that is handled
     it manages the infos, the maze, the play mode and the paths
     """
-    def __init__(self, window_size: int) -> None:
+    def __init__(self, window_size: int, name: str) -> None:
         """
         instantiate mlx and window size
         """
+        self.name = name
         self.mlx = Mlx()
         self.ptr = self.mlx.mlx_init()
         self.handle_screen_size(window_size)
@@ -78,7 +80,8 @@ class VisualManager:
         instantiate every visual class with their parameters
         """
         paths = [[value[0] for value in path] for path in
-                 solver_test(entry_exit, maze)]
+                 maze.solver()]
+        create_file(maze, self.name)
         self.maze = VisualMaze(maze, self.mlx, self.ptr,
                                self.window, self.screen["maze"], entry_exit)
         self.info = VisualInfo(self.mlx, self.ptr, self.window,
@@ -119,9 +122,9 @@ class VisualManager:
             case Commands.NEW_MAZE.value:
                 self.maze.maze.generate_maze()
                 self.path.paths = [[value[0] for value in path] for path in
-                                   solver_test(self.maze.entry_exit,
-                                               self.maze.maze)]
+                                   self.maze.maze.solver()]
                 self.maze.refresh()
+                create_file(self.maze.maze, self.name)
             case Commands.RANDOM_COLOR.value:
                 self.maze.random_color = not self.maze.random_color
             case Commands.PLAYMODE.value:
@@ -132,6 +135,9 @@ class VisualManager:
                 self.play.game_speed = min(5, self.play.game_speed + 1)
             case Commands.GAME_SPEED_LOW.value:
                 self.play.game_speed = max(1, self.play.game_speed - 1)
+            case Commands.RESTART.value:
+                self.play.coordinate = (self.maze.maze.entry[0] + 1,
+                                        self.maze.maze.entry[1] + 1)
             case Commands.SHOW_PATH.value:
                 self.maze.refresh()
                 self.path.handle_path()

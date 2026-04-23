@@ -9,14 +9,14 @@ class WilsonMaze(Maze):
         """
         instantiate parameters
         """
-        super().__init__(width, height, entry_exit, perfect)
-        if seed is not None:
-            random.seed(seed)
+        super().__init__(width, height, entry_exit, seed, perfect)
 
     def generate_maze(self) -> None:
         """
         method to call to generate a full new maze
         """
+        if self.seed:
+            random.seed(self.seed)
         self.generate_empty()
         self.empty = {(i, j) for j in range(self.width)
                       for i in range(self.height)}
@@ -24,14 +24,23 @@ class WilsonMaze(Maze):
         self.generate_first()
         while self.empty:
             self.generate_all_rest()
+        if not self.perfect:
+            self.imperfect_maze()
 
     def generate_empty(self) -> None:
         """
-        generate empty maze
+        method to init the gride (cellule of maze)
         """
         self.maze = [[{"N": False, "E": False, "S": False, "W": False}
                       for _ in range(self.width)]
                      for _ in range(self.height)]
+        zone_id = 1
+        for i in range(self.height):
+            for j in range(self.width):
+                self.maze[i][j]['zone'] = zone_id
+                self.lst_grid.append((i, j))
+        for cell in self.forty_two:
+            self.maze[cell[1]][cell[0]]['zone'] = 0
 
     def generate_first(self) -> None:
         """

@@ -1,4 +1,4 @@
-from mlx import Mlx
+from mlx import Mlx  # type: ignore
 from typing import Any
 from srcs.mazegen.maze import Maze
 from srcs.visual.visual_maze import VisualMaze
@@ -26,6 +26,7 @@ class VisualPath:
         self.speed = 0
         self.visual = visual
         self.frame: int = 0
+        self.delay: float = 0
 
     def slow_path(self, data: memoryview) -> None:
         """
@@ -42,7 +43,7 @@ class VisualPath:
         cell = self.paths[self.actual_path][self.cell]
         size_line = self.visual.size_case * len(self.maze.maze[0]) * 4
         pos = (size_line * self.visual.size_case *
-               cell[0]) + (self.visual.size_case * cell[1] * 4)
+               cell[1]) + (self.visual.size_case * cell[0] * 4)
         for i in range(self.visual.size_case):
             for i in range(0, self.visual.size_case * 4, 4):
                 if (data[pos + i: pos + i + 4] ==

@@ -14,11 +14,11 @@ install:
 
 lint:
 	flake8
-	python3 -m mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untypes-defs --check-untypes-defs
+	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports  --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
-	python3 -m flake8 .
-	python3 -m mypy . --strict
+	flake8 .
+	mypy . --strict
 
 build: 
 	pip install poetry && poetry build --output .
@@ -27,7 +27,7 @@ name:
 	@$(PYTHON) a_maze_ing.py $(FILE)
 
 clean:
-	rm -rf */*/__pycache__/ */*/*/__pycache__
+	rm -rf */*/__pycache__/ */*/*/__pycache__ */*__pycache__
 	rm -rf .mypy_cache/
 	rm -f *.xpm
 	rm -f maze.txt

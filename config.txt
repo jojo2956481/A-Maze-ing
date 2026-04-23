@@ -2,14 +2,6 @@ WIDTH=200
 HEIGHT=200
 ENTRY=0,0
 EXIT=199,199
-OUTPUT_FILE=dcskc.txt
-PERFECT=True
-
-
-
-# x et y sont inverses, il faut que ce soit dans l'ordre dans la config
-# x doit etre entre [0,width -1] ACTUELLEMENT DEPASSE CA MARCHE!
-# y doit etre entre[0, height - 1] PAREIL
-# verifier que l'entree et la sortie ne sont pas au meme endroit ET pas sur le pattern
-#le perfect a merge
-#SEED A GERER, la ca marche pas
+OUTPUT_FILE=output.txt
+PERFECT=False
+WINDOW=1

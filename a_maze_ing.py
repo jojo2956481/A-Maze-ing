@@ -1,6 +1,6 @@
 import sys
 try:
-    import mlx
+    import mlx  # type: ignore
     import pydantic
     mlx.Mlx()
     pydantic.AfterValidator
@@ -14,6 +14,7 @@ from srcs.visual.visual_manager import VisualManager
 import srcs.data_handling.parsing as parsing
 from enum import Enum
 from typing import Any
+import sys
 
 
 class Commands(Enum):
@@ -35,19 +36,25 @@ class HandleMaze:
         """
         self.data = parsing.pars_dict()
         entry_exit = (tuple(self.data["ENTRY"]), tuple(self.data["EXIT"]))
-        self.mazes = [DfsMaze(int(self.data["WIDTH"]),
-                              int(self.data["HEIGHT"]), entry_exit,
-                              self.data["SEED"], self.data["PERFECT"]),
-                      KruskalMaze(int(self.data["WIDTH"]),
+        try:
+            self.mazes = [DfsMaze(int(self.data["WIDTH"]),
                                   int(self.data["HEIGHT"]), entry_exit,
                                   self.data["SEED"], self.data["PERFECT"]),
-                      WilsonMaze(int(self.data["WIDTH"]),
-                                 int(self.data["HEIGHT"]), entry_exit,
-                                 self.data["SEED"], self.data["PERFECT"])]
+                          KruskalMaze(int(self.data["WIDTH"]),
+                                      int(self.data["HEIGHT"]), entry_exit,
+                                      self.data["SEED"], self.data["PERFECT"]),
+                          WilsonMaze(int(self.data["WIDTH"]),
+                                     int(self.data["HEIGHT"]), entry_exit,
+                                     self.data["SEED"], self.data["PERFECT"])]
+            if self.data["HEIGHT"] < 7 or self.data["WIDTH"] < 9:
+                print("The maze is too small for 42 patern.")
+        except ValueError as e:
+            print("[ERROR]:", e)
+            sys.exit(0)
         self.actual_maze = 0
         self.mazes[self.actual_maze].generate_maze()
         window = self.data["WINDOW"] if self.data["WINDOW"] else 1
-        self.visual = VisualManager(window)
+        self.visual = VisualManager(window, self.data["OUTPUT_FILE"])
         self.visual.get_visuals(self.mazes[self.actual_maze], entry_exit)
         self.default_maze()
 

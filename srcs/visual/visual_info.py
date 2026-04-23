@@ -1,5 +1,5 @@
 from srcs.visual.xpm.xpm_generator import create_xpm_title
-from mlx import Mlx
+from mlx import Mlx  # type: ignore
 from typing import Any
 
 
@@ -50,13 +50,13 @@ class VisualInfo:
         self.mlx.mlx_do_sync(self.ptr)
         commands = ["quit: q", "change color: c", "random color: r",
                     "new maze: n", "active/stop play mode: p",
-                    "change game speed: + and -", "show path: s",
-                    "hide path: h", "previous solution:", "   - up arrow",
-                    "next solution:", "   - down arrow",
+                    "change game speed: + and -", "beginning of the maze: b",
+                    "show path: s", "hide path: h", "previous solution:",
+                    "   - up arrow", "next solution:", "   - down arrow",
                     "active/stop instant path: i", "higher path speed:",
                     "   - right arrow", "lower path speed:", "   - left arrow",
                     "DFS: 1", "Kruskal: 2", "Wilson: 3"]
-        i = 30
+        i = 20
         for z in range(len(commands)):
             self.mlx.mlx_string_put(self.ptr, self.window,
                                     self.infos_coordinate[0] + 20,

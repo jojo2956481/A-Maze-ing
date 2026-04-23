@@ -7,8 +7,8 @@ class KeyValidation(BaseModel):
     """
     class with pydantic 'BaseModel' to check key and value
     """
-    WIDTH: int = Field(ge=9)
-    HEIGHT: int = Field(ge=7)
+    WIDTH: int = Field(ge=1)
+    HEIGHT: int = Field(ge=1)
     ENTRY: str
     EXIT: str
     OUTPUT_FILE: str
@@ -25,13 +25,13 @@ class KeyValidation(BaseModel):
         ex_x, ex_y = map(int, self.EXIT.split(","))
         if en_x < 0 or en_y < 0:
             raise ValueError("entry can't be below 0")
-        if en_x > self.HEIGHT or en_y > self.WIDTH:
+        if en_x >= self.WIDTH or en_y >= self.HEIGHT:
             raise ValueError("entry can't be above width or height")
         if ex_x < 0 or ex_y < 0:
             raise ValueError("exit can't be below 0")
-        if ex_x > self.HEIGHT or ex_y > self.WIDTH:
+        if ex_x >= self.WIDTH or ex_y >= self.HEIGHT:
             raise ValueError("exit can't be above width or height")
-        if self.OUTPUT_FILE.endswith('.txt\n'):
+        if not self.OUTPUT_FILE.endswith('.txt'):
             raise ValueError("output file must be ending by '.txt'")
         if ex_y == en_y and en_x == ex_x:
             raise ValueError("entry can't be same than exit")
@@ -95,7 +95,7 @@ def pars_args(args: list[str]) -> dict[str, Any]:
     return inventory
 
 
-def pars_dict() -> dict[str, Any] | None:
+def pars_dict() -> dict[str, Any]:
     """
     manage all fuction of parsing and return the right dict of data
     """

@@ -27,10 +27,10 @@ Then, you can run with the command *make run*.
 
 ## Projects choices
 
-### confing format:
+### Config format:
 The configuration file is set up in key=value format to retrieve the data necessary for generating and solving the maze
 
-exemple: 
+Example: 
 
     WIDTH=10
     HEIGHT=10
@@ -39,9 +39,9 @@ exemple:
     OUTPUT_FILE=dcskc.txt
     PERFECT=false
 
-the key SEED=45 (always the same maze) and WINDOW= 1 < x < 3 (display window) are optional
+The key SEED=45 (always the same maze) and WINDOW= 1 < x < 3 (display window) are optional
 
-### mazes generations and algorithms:
+### Mazes generations and algorithms:
 We have implemented 3 algorithms
 - ***Breadth-First Search (BFS) Maze Generation:***
 
@@ -93,45 +93,103 @@ We have implemented 3 algorithms
 
  - ***Wilson’s Algorithm for Maze Generation:***
 
-### why the algorithms
+   Wilson algorithm is a full random based algorithm. It is known as one of the most random maze generator. It is not optimised for big mazes size because of it's logic implementation. It use a loop erased algorithm to not fall into an infinite loop.
 
-These three algorithms allowed us to see different ways of generating a maze,    
-as well as their drawbacks and advantages.
+   The process works as follows:
+
+   Initialization
+   Start by chosing 2 random cells in the maze, defining the start and the end.   
+   It loop from the start in random neighbors until it reaches the end.   
+   When it loops until his own cell, it erases part of the loop and try another one.   
+   If it hit a wall or invalid cell, it cames back.   
+   When it reaches the end, it open all of the walls in the paths.   
+   Then, and until the maze is finished it makes these operations:   
+   It chooses a cell that has not been open yet.   
+   It loops until it reaches the the current maze with the same loop and fall back logic.
+
+### Why the algorithms
+
+These three algorithms allowed us to see different ways of generating a maze, as well as their drawbacks and advantages.   
 Breadth-First Search (BFS), Kruskal’s algorithm, and Wilson’s algorithm each have distinct strengths and weaknesses for maze generation.   
-BFS is simple and fast to implement, producing mazes with good connectivity and short paths, but it tends to create uniform, less interesting structures with low randomness and limited challenge. Kruskal’s algorithm generates perfect mazes with a good balance of randomness and structure, avoiding cycles and scaling efficiently with the help of a Union-Find data structure, though it is more complex to implement, uses more memory, and offers limited control over the maze’s visual style. Wilson’s algorithm, on the other hand, produces perfect mazes with true uniform randomness and natural, organic-looking paths thanks to loop-erased random walks, but it is slower, more complex to implement, and has less predictable performance, especially on large grids.
+BFS is simple and fast to implement, producing mazes with good connectivity and short paths, but it tends to create uniform, less interesting structures with low randomness and limited challenge.    
+Kruskal’s algorithm generates perfect mazes with a good balance of randomness and structure, avoiding cycles and scaling efficiently with the help of a Union-Find data structure, though it is more complex to implement, uses more memory, and offers limited control over the maze’s visual style.   
+Wilson’s algorithm, on the other hand, produces perfect mazes with true uniform randomness and natural, organic-looking paths thanks to loop-erased random walks, but it is slower, more complex to implement, and has less predictable performance, especially on large grids.
 
-### project reusability
+### Project reusability
 
-### project management:
+The maze generators can be transformed into a .whl (a binary file) and a .tar (a zip file) that can be reused in other project.   
+The .whl can be install with the command pip install or the .tar unzip with the command tar -xf.   
+To create these file, you can run the command make build.    
+The project is in a directory name mazegen and can be imported after installation as import mazegen.   
+
+### Project management:
 
 ***role of each member***
 
-                    ┌────────────────────────────┐
-                    │          lebessa           │
-                    │────────────────────────────│
-                    │ - parsing                  │
-                    │ - algorithm                │
-                    │ - solver                   │
-                    │ - output file              │
-                    └─────────────┬──────────────┘
-                                  │
-                                  │ partage
-                                  │
-                    ┌─────────────▼──────────────┐
-                    │          eel-kerc          │
-                    │────────────────────────────│
-                    │ - algorithm                │ 
-                    │ - solver                   │ 
-                    │ - graphical interface      │
-                    │ - reusability              │
-                    │ - Makefile                 │
-                    └────────────────────────────┘
+```mermaid
+  graph LR
+    subgraph L[lebessa]
+        L5[makefile]
+        L1[parsing]
+        L2[algorithm]
+        L3[solver]
+        L4[output file]
+    end
+
+    subgraph E[eel-kerc]
+        E1[algorithm]
+        E2[solver]
+        E3[graphical interface]
+        E4[reusability]
+        E5[Makefile]
+    end
+
+    L -->|share| E
+```
+
+***project progress order***
+
+```mermaid
+  graph LR
+   
+    A[Parsing] --> B[Algorithm]
+    B --> C[Solver]
+    C --> D[Output File]
+    D --> E[Interface Graphique]
+    E --> G[Optimisation]
+
+    B --> F[Debug]
+    C --> F
+    D --> F
+    E --> F
+    G --> F
+```
+
+### What is working well and what can be improved
+
+The project is working well overall.   
+What can be imrpoved is the mlx usage with the commands, because the mlx nerfed the string put and it crashes sometimes.   
+A function that create text with image can be done to be perfect.   
 
 
+### Tools used descriptions
 
-### what is working well and what can be improved
+For parsing we used the pydantic module and for the graphical interface we used the MLX library
 
-### tools used descriptions
+-MLX
+
+MLX is a machine learning framework developed by Apple, designed specifically for Apple Silicon (M-series chips).   
+It provides efficient tensor operations, automatic differentiation, and support for building and training models   
+with high performance on Mac devices. MLX emphasizes simplicity, flexibility, and tight integration with the Apple ecosystem,  
+making it suitable for research, prototyping, and on-device machine learning.  
+
+
+-Pydantic
+
+Pydantic is a Python library used for data validation and settings management based on type annotations.   
+It allows developers to define data models using Python classes, automatically validating and parsing input data   
+into the correct types. Pydantic is widely used in modern Python applications (especially with FastAPI) to ensure data integrity,   
+reduce boilerplate code, and provide clear error messages.   
 
 
 ## Additionnal features management
@@ -158,21 +216,17 @@ There is a instant mode that can be enable/disable. If disable, the speed can be
 
 ## Resources
 
-Mermaid : https://mermaid.ai/open-source/intro/getting-started.html
+Mermaid : https://mermaid.ai/open-source/intro/getting-started.html   
+pydantic : https://pydantic.dev/docs/validation/latest/get-started   
+algorithm : https://en.wikipedia.org/wiki/Maze_generation_algorithm ,    
+https://medium.com/@batu.senturk/the-ultimate-unbiased-maze-generation-technique-you-need-to-see-46123d5fec76   
+mlx : https://qst0.github.io/ft_libgfx/man_mlx.html ,    
+      https://aurelienbrabant.fr/blog/getting-started-with-the-minilibx    
+color management: https://htmlcolorcodes.com/    
 
 ### AI Usage
 
  - mlx installation comprehension
  - infinite loop debug
- - wilson algorithm comprehension
+ - wilson algorithm comprehension and debug
 
-
-The following code-block will be rendered as a Mermaid diagram:
-
-```mermaid
-  graph TD;
-      A-->B;
-      A-->C;
-      B-->D;
-      C-->D;
-```

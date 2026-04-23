@@ -1,7 +1,5 @@
 import random
 from .maze import Maze
-# from srcs.transform_data.parsing import pars_dict
-# from .solver import solver_bfs, solver_all_path
 
 
 class DfsMaze(Maze):
@@ -9,19 +7,20 @@ class DfsMaze(Maze):
     class that inherits from class maze to
     create all methode of maze building's
     """
-    def __init__(self, width: int, height: int, entry_exit,
+    def __init__(self, width: int, height: int,
+                 entry_exit: tuple[tuple[int, int], tuple[int, int]],
                  seed: int | None, perfect: bool) -> None:
         """
         method to init all atributs
         """
-        super().__init__(width, height, entry_exit, perfect)
-        if seed is not None:
-            random.seed(seed)
+        super().__init__(width, height, entry_exit, seed, perfect)
 
     def generate_maze(self) -> None:
         """
         method to manage all methods of the class
         """
+        if self.seed:
+            random.seed(self.seed)
         self.init_grid()
         i, j = self.start()
         self.dfs_recursive(i, j)
@@ -32,6 +31,7 @@ class DfsMaze(Maze):
         """
         method to init the gride (cellule of maze)
         """
+        self.lst_grid = []
         self.maze = [[{"N": False, "E": False, "S": False, "W": False}
                       for _ in range(self.width)]
                      for _ in range(self.height)]
@@ -109,70 +109,3 @@ class DfsMaze(Maze):
 
             if not moved:
                 stack.pop()
-
-    def solver_all_path(self) -> list[list]:
-        """
-        solver to find all path of maze
-        """
-        start = self.entry_exit[0]
-        goal = self.entry_exit[1]
-        all_path = []
-        path = []
-        path.append((start, None))
-        stack = [(start, path)]
-
-        while stack:
-            current, path = stack.pop()
-            i, j = current
-            if current == goal:
-                all_path.append(path.copy())
-                continue
-            cell = self.maze[i][j]
-            directions = [
-                ('N', (-1, 0)),
-                ('S', (1, 0)),
-                ('E', (0, 1)),
-                ('W', (0, -1))
-            ]
-            for direction, (di, dj) in directions:
-                if cell[direction]:
-                    ni, nj = i + di, j + dj
-                    neighbor = (ni, nj)
-                    if 0 <= ni < self.height and 0 <= nj < self.width:
-                        if neighbor not in [p[0] for p in path]:
-                            stack.append(
-                                (neighbor, path +
-                                 [(neighbor, direction)]))
-        # print(len(sorted(all_path, key=lambda x: len(x))))
-        return sorted(all_path, key=lambda x: len(x))
-
-    def imperfect_maze(self) -> None:
-        """
-        broke wall to make maze imperfect
-        """
-        directions = {
-            'N': (-1, 0, 'S'),
-            'S': (1, 0, 'N'),
-            'E': (0, 1, 'W'),
-            'W': (0, -1, 'E')
-        }
-        count = 1
-        while (count < 3):
-            i = random.randint(0, self.height - 1)
-            j = random.randint(0, self.width - 1)
-            dir_name = random.choice(list(directions.keys()))
-            di, dj, opposite = directions[dir_name]
-            ni, nj = i + di, j + dj
-            if 0 <= ni < self.height and 0 <= nj < self.width:
-                if not self.maze[i][j][dir_name]:
-                    if self.maze[i][j]["zone"] != 0:
-                        if self.maze[ni][nj]["zone"] != 0:
-
-                            self.maze[i][j][dir_name] = True
-                            self.maze[ni][nj][opposite] = True
-                            solution = self.solver_all_path()
-                            if len(solution) <= count:
-                                self.maze[i][j][dir_name] = False
-                                self.maze[ni][nj][opposite] = False
-                            else:
-                                count += 1

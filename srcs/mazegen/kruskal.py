@@ -7,21 +7,24 @@ class KruskalMaze(Maze):
     class that inherits from class maze to
     create all methode of maze building's
     """
-    def __init__(self, width: int, height: int, entry_exit,
+    def __init__(self, width: int, height: int,
+                 entry_exit: tuple[tuple[int, int], tuple[int, int]],
                  seed: int | None, perfect: bool) -> None:
         """
         method to init all atributs
         """
-        super().__init__(width, height, entry_exit, perfect)
-        if seed is not None:
-            random.seed(seed)
+        super().__init__(width, height, entry_exit, seed, perfect)
 
-    def generate_maze(self, seed: int | None = None) -> None:
+    def generate_maze(self) -> None:
         """
         method to manage all methods of the class
         """
+        if self.seed:
+            random.seed(self.seed)
         self.init_grid()
-        self.generer(seed)
+        self.generer()
+        if not self.perfect:
+            self.imperfect_maze()
 
     def init_grid(self) -> None:
         """
@@ -36,7 +39,7 @@ class KruskalMaze(Maze):
                 self.maze[i][j]['zone'] = zone_id
                 self.lst_grid.append((i, j))
 
-    def generer(self, seed: int | None = None) -> None:
+    def generer(self) -> None:
         """
         method to open wall
         """
@@ -58,8 +61,6 @@ class KruskalMaze(Maze):
                 if i < self.height - 1:
                     murs.append((i, j, 'S'))
 
-        if seed is not None:
-            random.seed(seed)
         random.shuffle(murs)
         for (i, j, direction) in murs:
             self.fusionner(i, j, direction)
