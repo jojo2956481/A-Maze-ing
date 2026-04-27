@@ -21,6 +21,7 @@ class Maze(ABC):
         self.lst_grid: list[tuple[int, int]] = []
         self.perfect = perfect
         self.seed = seed
+        self.generate_maze()
 
     @abstractmethod
     def generate_maze(self) -> None:
@@ -76,7 +77,6 @@ class Maze(ABC):
         """
         A solver that found every path possible of the maze
         """
-        from time import time
         start, exit = self.entry, self.exit
         visited = {start}
         paths = []
@@ -86,7 +86,6 @@ class Maze(ABC):
             ]
         actual_path: list[tuple[
             tuple[int, int], Any, Any]] = [(start, None, directions.copy())]
-        p = time()
         while actual_path:
             if not actual_path[-1][2]:
                 pos, _, _ = actual_path.pop()
@@ -110,7 +109,6 @@ class Maze(ABC):
                                    visited, cell):
                 actual_path.append((new_pos, direction[0], directions.copy()))
                 visited.add(new_pos)
-        print(f"Solution: {len(paths)},   Runtime: {time() - p}")
         return paths
 
     def check_next_pos(self, new_pos: tuple[int, int],
@@ -133,6 +131,8 @@ class Maze(ABC):
         """
         broke wall to make maze imperfect
         """
+        if self.width < 5 or self.height < 5:
+            return
         directions = {
             'N': (0, -1, 'S'),
             'S': (0, 1, 'N'),

@@ -51,31 +51,31 @@ class DfsMaze(Maze):
                 self.maze[i][j]["zone"] = 1
                 return i, j
 
-    def find_voisin(self, direction: str,
+    def find_neighbor(self, direction: str,
                     i: int, j: int) -> tuple[int, int, str, str]:
         """
-        method to find the voisin of current cellule
+        method to find the neighbor of current cellule
         """
 
         ni, nj = 0, 0
         if direction == 'N':
             ni, nj = i - 1, j
-            mur_cell = 'N'
-            mur_voisin = 'S'
+            wall_cell = 'N'
+            wall_neighbor = 'S'
         elif direction == 'S':
             ni, nj = i + 1, j
-            mur_cell = 'S'
-            mur_voisin = 'N'
+            wall_cell = 'S'
+            wall_neighbor = 'N'
         elif direction == 'E':
             ni, nj = i, j + 1
-            mur_cell = 'E'
-            mur_voisin = 'W'
+            wall_cell = 'E'
+            wall_neighbor = 'W'
         elif direction == 'W':
             ni, nj = i, j - 1
-            mur_cell = 'W'
-            mur_voisin = 'E'
+            wall_cell = 'W'
+            wall_neighbor = 'E'
 
-        return ni, nj, mur_cell, mur_voisin
+        return ni, nj, wall_cell, wall_neighbor
 
     def dfs_recursive(self, i: int, j: int) -> None:
         """
@@ -91,7 +91,7 @@ class DfsMaze(Maze):
 
             moved = False
             for direction in directions:
-                ni, nj, mur_cell, mur_voisin = self.find_voisin(direction,
+                ni, nj, wall_cell, wall_neighbor = self.find_neighbor(direction,
                                                                 i, j)
 
                 if not (0 <= ni < self.height and 0 <= nj < self.width):
@@ -99,8 +99,8 @@ class DfsMaze(Maze):
                 if (ni, nj) in self.forty_two:
                     continue
                 if self.maze[ni][nj]["zone"] == 0:
-                    self.maze[i][j][mur_cell] = True
-                    self.maze[ni][nj][mur_voisin] = True
+                    self.maze[i][j][wall_cell] = True
+                    self.maze[ni][nj][wall_neighbor] = True
                     self.maze[ni][nj]["zone"] = 1
 
                     stack.append((ni, nj))

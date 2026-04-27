@@ -52,7 +52,6 @@ class HandleMaze:
             print("[ERROR]:", e)
             sys.exit(0)
         self.actual_maze = 0
-        self.mazes[self.actual_maze].generate_maze()
         window = self.data["WINDOW"] if self.data["WINDOW"] else 1
         self.visual = VisualManager(window, self.data["OUTPUT_FILE"])
         self.visual.get_visuals(self.mazes[self.actual_maze], entry_exit)

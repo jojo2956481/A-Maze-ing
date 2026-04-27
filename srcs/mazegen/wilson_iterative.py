@@ -15,6 +15,9 @@ class WilsonMaze(Maze):
         """
         method to call to generate a full new maze
         """
+        from time import time
+        print("here")
+        p = time()
         if self.seed:
             random.seed(self.seed)
         self.generate_empty()
@@ -26,6 +29,7 @@ class WilsonMaze(Maze):
             self.generate_all_rest()
         if not self.perfect:
             self.imperfect_maze()
+        print("Runtime: ", time() - p)
 
     def generate_empty(self) -> None:
         """

@@ -35,8 +35,7 @@ class KeyValidation(BaseModel):
             raise ValueError("output file must be ending by '.txt'")
         if ex_y == en_y and en_x == ex_x:
             raise ValueError("entry can't be same than exit")
-        else:
-            return self
+        return self
 
     def return_dict(self) -> dict[str, Any]:
         """
@@ -64,9 +63,9 @@ def read_file() -> tuple[list[str], str]:
         raise ValueError("error args")
     try:
         with open(args[0], "r") as f:
-            contenue = f.read()
-            if contenue:
-                lst = contenue.splitlines()
+            result = f.read()
+            if result:
+                lst = result.splitlines()
                 return lst, file_name
             raise ValueError("file empty")
     except IOError as e:

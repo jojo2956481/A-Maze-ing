@@ -19,53 +19,51 @@ class KruskalMaze(Maze):
         """
         method to manage all methods of the class
         """
+        from time import time
+        print("kruskal")
+        p = time()
         if self.seed:
             random.seed(self.seed)
         self.init_grid()
-        self.generer()
+        self.generate()
         if not self.perfect:
             self.imperfect_maze()
+        print("First run:", time() - p)
 
     def init_grid(self) -> None:
         """
-        method to init the gride (cellule of maze)
+        method to init the gride (cell of maze)
         """
         self.maze = [[{"N": False, "E": False, "S": False, "W": False}
                       for _ in range(self.width)]
                      for _ in range(self.height)]
-        zone_id = 0
+        zone_id = 1
         for i in range(self.height):
             for j in range(self.width):
                 self.maze[i][j]['zone'] = zone_id
                 self.lst_grid.append((i, j))
+                zone_id += 1
+        for cell in self.forty_two:
+            self.maze[cell[1]][cell[0]]['zone'] = 0
 
-    def generer(self) -> None:
+    def generate(self) -> None:
         """
         method to open wall
         """
-        zone_id = 0
-        for i in range(self.height):
-            for j in range(self.width):
-                self.maze[i][j]['zone'] = zone_id
-                self.maze[i][j]['N'] = False
-                self.maze[i][j]['E'] = False
-                self.maze[i][j]['S'] = False
-                self.maze[i][j]['W'] = False
-                zone_id += 1
-        murs = []
+        walls = []
 
         for i in range(self.height):
             for j in range(self.width):
                 if j < self.width - 1:
-                    murs.append((i, j, 'E'))
+                    walls.append((i, j, 'E'))
                 if i < self.height - 1:
-                    murs.append((i, j, 'S'))
+                    walls.append((i, j, 'S'))
 
-        random.shuffle(murs)
-        for (i, j, direction) in murs:
-            self.fusionner(i, j, direction)
+        random.shuffle(walls)
+        for (i, j, direction) in walls:
+            self.merge(i, j, direction)
 
-    def fusionner(self, i: int, j: int, dir: str) -> bool:
+    def merge(self, i: int, j: int, dir: str) -> bool:
         """
         method to find if zone are close
         """
@@ -74,28 +72,28 @@ class KruskalMaze(Maze):
         if (i, j) in self.forty_two:
             return False
 
-        cellule = self.maze[i][j]
-        zone1 = int(cellule['zone'])
+        cell = self.maze[i][j]
+        zone1 = int(cell['zone'])
 
         ni = nj = None
-        mur_cell = mur_voisin = None
+        wall_cell = wall_neighbor = None
 
         if dir == 'N':
             ni, nj = i - 1, j
-            mur_cell = 'N'
-            mur_voisin = 'S'
+            wall_cell = 'N'
+            wall_neighbor = 'S'
         elif dir == 'S':
             ni, nj = i + 1, j
-            mur_cell = 'S'
-            mur_voisin = 'N'
+            wall_cell = 'S'
+            wall_neighbor = 'N'
         elif dir == 'E':
             ni, nj = i, j + 1
-            mur_cell = 'E'
-            mur_voisin = 'W'
+            wall_cell = 'E'
+            wall_neighbor = 'W'
         elif dir == 'W':
             ni, nj = i, j - 1
-            mur_cell = 'W'
-            mur_voisin = 'E'
+            wall_cell = 'W'
+            wall_neighbor = 'E'
         else:
             return False
         if not (0 <= ni < self.height and 0 <= nj < self.width):
@@ -104,14 +102,14 @@ class KruskalMaze(Maze):
         if (ni, nj) in self.forty_two:
             return False
 
-        voisin = self.maze[ni][nj]
-        zone2 = voisin['zone']
+        neighbor = self.maze[ni][nj]
+        zone2 = neighbor['zone']
 
         if zone1 == zone2:
             return False
 
-        cellule[mur_cell] = True
-        voisin[mur_voisin] = True
+        cell[wall_cell] = True
+        neighbor[wall_neighbor] = True
 
         for x in range(self.height):
             for y in range(self.width):
