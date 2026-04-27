@@ -50,6 +50,16 @@ class KruskalMaze(Maze):
         """
         method to open wall
         """
+        zone_id = 1
+        for i in range(self.height):
+            for j in range(self.width):
+                self.maze[i][j]['zone'] = zone_id
+                self.maze[i][j]['N'] = False
+                self.maze[i][j]['E'] = False
+                self.maze[i][j]['S'] = False
+                self.maze[i][j]['W'] = False
+                zone_id += 1
+    
         walls = []
 
         for i in range(self.height):
