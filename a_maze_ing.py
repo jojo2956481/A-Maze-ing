@@ -52,6 +52,7 @@ class HandleMaze:
             print("[ERROR]:", e)
             sys.exit(0)
         self.actual_maze = 0
+        self.mazes[self.actual_maze].generate_maze()
         window = self.data["WINDOW"] if self.data["WINDOW"] else 1
         self.visual = VisualManager(window, self.data["OUTPUT_FILE"])
         self.visual.get_visuals(self.mazes[self.actual_maze], entry_exit)
@@ -77,7 +78,10 @@ class HandleMaze:
                     self.actual_maze = 1
                 case Commands.WILSON.value:
                     self.actual_maze = 2
+            self.mazes[self.actual_maze].generate_maze()
             self.visual.maze.maze = self.mazes[self.actual_maze]
+            self.visual.play.maze = self.mazes[self.actual_maze]
+            self.visual.path.paths = self.visual.maze.maze.paths
 
     def looping(self) -> None:
         """
@@ -93,3 +97,4 @@ class HandleMaze:
 if __name__ == "__main__":
     handler = HandleMaze()
     handler.looping()
+    handler.visual.free_mlx()

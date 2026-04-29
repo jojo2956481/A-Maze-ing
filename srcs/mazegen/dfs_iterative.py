@@ -26,6 +26,8 @@ class DfsMaze(Maze):
         self.dfs_recursive(i, j)
         if not self.perfect:
             self.imperfect_maze()
+        self.paths = [[value[0] for value in path] for path in
+                      self.solver()]
 
     def init_grid(self) -> None:
         """
@@ -52,7 +54,7 @@ class DfsMaze(Maze):
                 return i, j
 
     def find_neighbor(self, direction: str,
-                    i: int, j: int) -> tuple[int, int, str, str]:
+                      i: int, j: int) -> tuple[int, int, str, str]:
         """
         method to find the neighbor of current cellule
         """
@@ -91,8 +93,8 @@ class DfsMaze(Maze):
 
             moved = False
             for direction in directions:
-                ni, nj, wall_cell, wall_neighbor = self.find_neighbor(direction,
-                                                                i, j)
+                ni, nj, wall_cell, wall_neighbor = self.find_neighbor(
+                    direction, i, j)
 
                 if not (0 <= ni < self.height and 0 <= nj < self.width):
                     continue

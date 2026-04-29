@@ -16,25 +16,26 @@ class WilsonMaze(Maze):
         method to call to generate a full new maze
         """
         from time import time
-        print("here")
         p = time()
         if self.seed:
             random.seed(self.seed)
         self.generate_empty()
-        self.empty = {(i, j) for j in range(self.width)
-                      for i in range(self.height)}
-        self.empty = self.empty.difference(set(self.forty_two))
         self.generate_first()
         while self.empty:
             self.generate_all_rest()
         if not self.perfect:
             self.imperfect_maze()
+        self.paths = [[value[0] for value in path] for path in
+                      self.solver()]
         print("Runtime: ", time() - p)
 
     def generate_empty(self) -> None:
         """
         method to init the gride (cellule of maze)
         """
+        self.empty = {(i, j) for j in range(self.width)
+                      for i in range(self.height)}
+        self.empty = self.empty.difference(set(self.forty_two))
         self.maze = [[{"N": False, "E": False, "S": False, "W": False}
                       for _ in range(self.width)]
                      for _ in range(self.height)]
@@ -44,7 +45,7 @@ class WilsonMaze(Maze):
                 self.maze[i][j]['zone'] = zone_id
                 self.lst_grid.append((i, j))
         for cell in self.forty_two:
-            self.maze[cell[1]][cell[0]]['zone'] = 0
+            self.maze[cell[0]][cell[1]]['zone'] = 0
 
     def generate_first(self) -> None:
         """
@@ -53,22 +54,30 @@ class WilsonMaze(Maze):
         """
         pos = random.choice(list(self.empty))
         end = random.choice(list(self.empty))
+        while end == pos:
+            end = random.choice(list(self.empty))
         visited = [pos]
+        set_visited = {pos}
+        directions = {"N": (0, -1), "E": (1, 0), "S": (0, 1), "W": (-1, 0)}
         while True:
             neighboor = ["N", "E", "S", "W"]
-            next = random.choice(neighboor)
-            new_pos = self.get_new_pos(visited[-1], next)
-            neighboor.pop(neighboor.index(next))
-            while not self.check_next_good(visited, next) and neighboor:
-                next = random.choice(neighboor)
-                new_pos = self.get_new_pos(visited[-1], next)
-                neighboor.pop(neighboor.index(next))
-            if new_pos in visited:
-                visited = visited[:visited.index(new_pos) + 1]
+            random.shuffle(neighboor)
+            next = neighboor.pop()
+            nx, ny = directions[next]
+            new_pos = (visited[-1][0] + nx, visited[-1][1] + ny)
+            while not self.check_next_good(new_pos) and neighboor:
+                next = neighboor.pop()
+                nx, ny = directions[next]
+                new_pos = (visited[-1][0] + nx, visited[-1][1] + ny)
+            if new_pos in set_visited:
+                index = visited.index(new_pos) + 1
+                set_visited.difference_update(set(visited[index:]))
+                visited = visited[:index]
                 continue
-            visited.append(self.get_new_pos(visited[-1], next))
-            if visited[-1] == end:
-                self.empty = self.empty.difference(set(visited))
+            visited.append(new_pos)
+            set_visited.add(new_pos)
+            if new_pos == end:
+                self.empty.difference_update(set_visited)
                 self.open_wall(visited)
                 return
 
@@ -79,37 +88,29 @@ class WilsonMaze(Maze):
         """
         pos = random.choice(list(self.empty))
         visited = [pos]
+        set_visited = {pos}
+        directions = {"N": (0, -1), "E": (1, 0), "S": (0, 1), "W": (-1, 0)}
         while True:
             neighboor = ["N", "E", "S", "W"]
-            next = random.choice(neighboor)
-            new_pos = self.get_new_pos(visited[-1], next)
-            neighboor.pop(neighboor.index(next))
-            while not self.check_next_good(visited, next) and neighboor:
-                next = random.choice(neighboor)
-                new_pos = self.get_new_pos(visited[-1], next)
-                neighboor.pop(neighboor.index(next))
+            random.shuffle(neighboor)
+            next = neighboor.pop()
+            nx, ny = directions[next]
+            new_pos = (visited[-1][0] + nx, visited[-1][1] + ny)
+            while not self.check_next_good(new_pos) and neighboor:
+                next = neighboor.pop()
+                nx, ny = directions[next]
+                new_pos = (visited[-1][0] + nx, visited[-1][1] + ny)
             if new_pos in visited:
-                visited = visited[:visited.index(new_pos) + 1]
+                index = visited.index(new_pos) + 1
+                set_visited.difference_update(set(visited[index:]))
+                visited = visited[:index]
                 continue
-            visited.append(self.get_new_pos(visited[-1], next))
+            visited.append(new_pos)
+            set_visited.add(new_pos)
             if visited[-1] not in self.empty:
-                self.empty = self.empty.difference(set(visited))
+                self.empty.difference_update(set_visited)
                 self.open_wall(visited)
                 return
-
-    def get_new_pos(self, pos: tuple[int, int], next: str) -> tuple[int, int]:
-        """
-        get the new cell positions depending of the direction
-        """
-        if (next == "N"):
-            new_pos = (pos[0] - 1, pos[1])
-        if (next == "E"):
-            new_pos = (pos[0], pos[1] + 1)
-        if (next == "S"):
-            new_pos = (pos[0] + 1, pos[1])
-        if (next == "W"):
-            new_pos = (pos[0], pos[1] - 1)
-        return new_pos
 
     def open_wall(self, visited: list[tuple[int, int]]) -> None:
         """
@@ -143,13 +144,10 @@ class WilsonMaze(Maze):
             self.maze[cell[0]][cell[1]]["W"] = True
             self.maze[cell[0]][cell[1] - 1]["E"] = True
 
-    def check_next_good(self, visited: list[tuple[int, int]],
-                        next: str) -> bool:
+    def check_next_good(self, new_pos: tuple[int, int]) -> bool:
         """
         check if the next cell is valid
         """
-        pos = visited[-1]
-        new_pos = self.get_new_pos(pos, next)
         if (new_pos[0] >= self.height or new_pos[0] < 0 or
                 new_pos[1] >= self.width or new_pos[1] < 0):
             return False

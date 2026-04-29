@@ -42,10 +42,12 @@ class VisualInfo:
         self.mlx.mlx_put_image_to_window(self.ptr, self.window, image[0],
                                          self.title_coordinate[0],
                                          self.title_coordinate[1])
+        self.mlx.mlx_destroy_image(self.ptr, image[0])
         image = self.mlx.mlx_xpm_file_to_image(self.ptr, "commands.xpm")
         self.mlx.mlx_put_image_to_window(self.ptr, self.window, image[0],
                                          self.infos_coordinate[0] + 10,
                                          self.infos_coordinate[1] - 40)
+        self.mlx.mlx_destroy_image(self.ptr, image[0])
         self.generate_background()
         self.mlx.mlx_do_sync(self.ptr)
         commands = ["quit: q", "change color: c", "random color: r",
@@ -80,3 +82,4 @@ class VisualInfo:
         self.mlx.mlx_put_image_to_window(self.ptr, self.window, temp,
                                          self.infos_coordinate[0],
                                          self.infos_coordinate[1])
+        self.mlx.mlx_destroy_image(self.ptr, temp)

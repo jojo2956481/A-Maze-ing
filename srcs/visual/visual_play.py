@@ -56,23 +56,21 @@ class VisualPlay:
                                               len(self.maze.maze))
             return self.is_in_maze(mouse)
 
-    def get_direction(self, mouse: tuple[int, int]) -> str:
+    def get_direction(self, mouse: tuple[int, int]) -> list[str]:
         """
         determine the position the player should go, depending on the
         mouse position and the player position
         """
         new_pos = ((mouse[0] - self.coordinate[0]) - self.size // 2,
                    (mouse[1] - self.coordinate[1]) - self.size // 2)
-        if abs(new_pos[0]) > abs(new_pos[1]):
-            if new_pos[0] >= 0:
-                direction = "E"
-            else:
-                direction = "W"
+        if new_pos[0] >= 0:
+            direction = ["E"]
         else:
-            if new_pos[1] >= 0:
-                direction = "S"
-            else:
-                direction = "N"
+            direction = ["W"]
+        if new_pos[1] >= 0:
+            direction.append("S")
+        else:
+            direction.append("N")
         return direction
 
     def check_north(self, new_pos: tuple[int, int]) -> bool:
@@ -211,7 +209,8 @@ class VisualPlay:
                          y - self.maze_coordinate[1])
                 if self.is_in_maze(mouse):
                     direction = self.get_direction(mouse)
-                    self.move_player(direction)
+                    self.move_player(direction[0])
+                    self.move_player(direction[1])
             self.visual_maze.show_to_window()
             self.mlx.mlx_put_image_to_window(self.ptr, self.window,
                                              self.player,

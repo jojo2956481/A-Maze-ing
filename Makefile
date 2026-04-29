@@ -13,12 +13,12 @@ install:
 	pip install mlx-2.2-py3-none-any.whl
 
 lint:
-	flake8
-	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports  --disallow-untyped-defs --check-untyped-defs
+	flake8 srcs a_maze_ing.py
+	mypy srcs a_maze_ing.py --warn-return-any --warn-unused-ignores --ignore-missing-imports  --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
-	flake8 .
-	mypy . --strict
+	flake8 srcs a_maze_ing.py
+	mypy srcs a_maze_ing.py --strict
 
 build: 
 	pip install poetry && poetry build --output .

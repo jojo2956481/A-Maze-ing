@@ -27,11 +27,10 @@ class OutputFile():
             for j in range(self.width):
                 cell = self.maze[i][j]
                 binary = ""
-                binary += '1' if cell['W'] else '0'
-                binary += '1' if cell['S'] else '0'
-                binary += '1' if cell['E'] else '0'
-                binary += '1' if cell['N'] else '0'
-
+                binary += '1' if not cell['W'] else '0'
+                binary += '1' if not cell['S'] else '0'
+                binary += '1' if not cell['E'] else '0'
+                binary += '1' if not cell['N'] else '0'
                 row += format(int(binary, 2), 'X')
             line.append(row)
         return "\n".join(line)

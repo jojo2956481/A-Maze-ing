@@ -27,6 +27,7 @@ class VisualPath:
         self.visual = visual
         self.frame: int = 0
         self.delay: float = 0
+        self.show = False
 
     def slow_path(self, data: memoryview) -> None:
         """
@@ -72,10 +73,10 @@ class VisualPath:
                             self.visual.actual_color[1]):
                         data[pos + i: pos + i + 4] = color
                 pos += size_line
-            self.mlx.mlx_put_image_to_window(self.ptr, self.window,
-                                             self.visual.image_maze,
-                                             self.coordinate[0],
-                                             self.coordinate[1])
+        self.mlx.mlx_put_image_to_window(self.ptr, self.window,
+                                         self.visual.image_maze,
+                                         self.coordinate[0],
+                                         self.coordinate[1])
 
     def handle_path(self) -> None:
         """

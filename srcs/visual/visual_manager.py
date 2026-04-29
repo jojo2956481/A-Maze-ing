@@ -79,8 +79,6 @@ class VisualManager:
         """
         instantiate every visual class with their parameters
         """
-        paths = [[value[0] for value in path] for path in
-                 maze.solver()]
         create_file(maze, self.name)
         self.maze = VisualMaze(maze, self.mlx, self.ptr,
                                self.window, self.screen["maze"], entry_exit)
@@ -88,7 +86,7 @@ class VisualManager:
                                self.screen["title"], self.screen["info"])
         self.path = VisualPath(self.mlx, self.ptr, self.window,
                                self.screen["maze"][1],
-                               paths, maze, self.maze)
+                               self.maze.maze.paths, maze, self.maze)
         self.play = VisualPlay(self.mlx, self.ptr, self.window, maze,
                                self.maze.size_case, entry_exit,
                                self.screen["maze"][1],
@@ -108,6 +106,12 @@ class VisualManager:
         """
         self.mlx.mlx_loop_exit(self.ptr)
 
+    def free_mlx(self) -> None:
+        self.mlx.mlx_destroy_image(self.ptr, self.play.player)
+        self.mlx.mlx_destroy_image(self.ptr, self.maze.image_maze)
+        self.mlx.mlx_destroy_window(self.ptr, self.window)
+        self.mlx.mlx_release(self.ptr)
+
     def keyboard_management(self, keycode: int) -> None:
         """
         method that is called when a key is pressed
@@ -121,10 +125,9 @@ class VisualManager:
                 self.maze.refresh()
             case Commands.NEW_MAZE.value:
                 self.maze.maze.generate_maze()
-                self.path.paths = [[value[0] for value in path] for path in
-                                   self.maze.maze.solver()]
                 self.maze.refresh()
                 create_file(self.maze.maze, self.name)
+                self.path.paths = self.maze.maze.paths
             case Commands.RANDOM_COLOR.value:
                 self.maze.random_color = not self.maze.random_color
             case Commands.PLAYMODE.value:
@@ -139,9 +142,11 @@ class VisualManager:
                 self.play.coordinate = (self.maze.maze.entry[0] + 1,
                                         self.maze.maze.entry[1] + 1)
             case Commands.SHOW_PATH.value:
+                self.path.show = True
                 self.maze.refresh()
                 self.path.handle_path()
             case Commands.HIDE_PATH.value:
+                self.path.show = False
                 self.path.cell = len(self.path.paths[self.path.actual_path])
                 self.maze.refresh()
             case Commands.INSTANT_MODE.value:
@@ -153,12 +158,20 @@ class VisualManager:
                 if self.path.speed < 5:
                     self.path.speed += 1
             case Commands.PREV_PATH.value:
+                print(self.path.actual_path)
                 if self.path.actual_path - 1 > 0:
                     self.path.actual_path -= 1
                 else:
                     self.path.actual_path = len(self.path.paths) - 1
+                if self.path.show:
+                    self.maze.refresh()
+                    self.path.handle_path()
             case Commands.NEXT_PATH.value:
+                print(self.path.actual_path)
                 if self.path.actual_path + 1 < len(self.path.paths):
                     self.path.actual_path += 1
                 else:
                     self.path.actual_path = 0
+                if self.path.show:
+                    self.maze.refresh()
+                    self.path.handle_path()

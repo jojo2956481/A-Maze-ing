@@ -12,17 +12,44 @@ The maze algorithm can be transform in a .whl to be reuse in other projects that
 
 ## Instructions
 
- To run this project, you should install the required dependencies with the following command : *make install*.  
+ To run this project, you should **install the required dependencies** with the following command 
+ ``` shell
+ make install
+ ```  
 It is recommanded to use a virtual environment for dependencies installation.   
-Then, you can run with the command *make run*.
 
- To create the .whl and .tar, run the command *make build*.
+Then, you can run with the command 
+``` bash
+make run
+```
 
- For norm and typing checking, run *make lint*, or *make lint-strict* for strict checking.
+ To create the .whl and .tar, run the command 
+ ``` bash
+ make build
+ ```
 
- Run `make clean` to clean dependencies like pycache or created files.
 
- To run the project in debug mode using python built-in debugger, run *make debug*.
+For norm and typing checking, run:
+ ``` bash 
+ make lint 
+ ```
+or 
+``` bash
+make lint-strict
+``` 
+for strict checking.
+
+Run 
+``` bash
+bash make clean
+```  
+to clean dependencies like pycache or created files.
+
+To run the project in debug mode using
+python built-in debugger, run 
+``` bash
+make debug
+```
 
 
 ## Projects choices
@@ -32,14 +59,19 @@ The configuration file is set up in key=value format to retrieve the data necess
 
 Example: 
 
+    # mandatory keys
     WIDTH=10
     HEIGHT=10
     ENTRY=0,9
     EXIT=0,7
-    OUTPUT_FILE=dcskc.txt
+    OUTPUT_FILE=output.txt
     PERFECT=false
 
-The key SEED=45 (always the same maze) and WINDOW= 1 < x < 3 (display window) are optional
+    # additional keys
+    SEED=2
+    WINDOW=1
+
+The key SEED=45 (always the same maze) and WINDOW= 1 <= x <= 3 (display window) are optional
 
 ### Mazes generations and algorithms:
 We have implemented 3 algorithms

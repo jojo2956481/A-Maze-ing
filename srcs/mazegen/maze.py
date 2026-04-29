@@ -15,13 +15,13 @@ class Maze(ABC):
         self.height: int = height
         self.entry, self.exit = entry_exit
         self.maze: list[list[dict[str, Any]]] = []
-        self.forty_two: list[tuple[int, int]] = []
+        self.forty_two: set[tuple[int, int]] = set()
         if self.width >= 9 and self.height >= 7:
             self.place_42()
         self.lst_grid: list[tuple[int, int]] = []
         self.perfect = perfect
         self.seed = seed
-        self.generate_maze()
+        self.paths: list[list[tuple[int, int]]] = []
 
     @abstractmethod
     def generate_maze(self) -> None:
@@ -53,21 +53,20 @@ class Maze(ABC):
 
         start_i = centre_i - 2
         start_j = centre_j - 4
-
         for di in range(len(four)):
             for dj in range(len(four[0])):
                 if four[di][dj] == 1:
                     i = start_i + di
                     j = start_j + dj
                     if 0 <= i < self.height and 0 <= j < self.width:
-                        self.forty_two.append((i, j))
+                        self.forty_two.add((i, j))
         for di in range(len(two)):
             for dj in range(len(two[0])):
                 if two[di][dj] == 1:
                     i = start_i + di
                     j = start_j + dj + 4
                     if 0 <= i < self.height and 0 <= j < self.width:
-                        self.forty_two.append((i, j))
+                        self.forty_two.add((i, j))
         if self.entry[::-1] in self.forty_two:
             raise ValueError("Entry can't be placed in the 42")
         if self.exit[::-1] in self.forty_two:
