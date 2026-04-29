@@ -82,6 +82,7 @@ class HandleMaze:
             self.visual.maze.maze = self.mazes[self.actual_maze]
             self.visual.play.maze = self.mazes[self.actual_maze]
             self.visual.path.paths = self.visual.maze.maze.paths
+            self.visual.maze.refresh()
 
     def looping(self) -> None:
         """

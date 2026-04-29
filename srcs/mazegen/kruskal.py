@@ -14,22 +14,18 @@ class KruskalMaze(Maze):
         method to init all atributs
         """
         super().__init__(width, height, entry_exit, seed, perfect)
+        self.zone_dict: dict[str, list[tuple[int, int]]] = {}
 
     def generate_maze(self) -> None:
         """
         method to manage all methods of the class
         """
-        from time import time
-        p = time()
         if self.seed:
             random.seed(self.seed)
         self.init_grid()
         self.generate()
         if not self.perfect:
             self.imperfect_maze()
-        self.paths = [[value[0] for value in path] for path in
-                      self.solver()]
-        print("First run:", time() - p)
 
     def init_grid(self) -> None:
         """
@@ -45,7 +41,7 @@ class KruskalMaze(Maze):
                 self.lst_grid.append((i, j))
                 zone_id += 1
         for cell in self.forty_two:
-            self.maze[cell[0]][cell[1]]['zone'] = 0
+            self.maze[cell[1]][cell[0]]['zone'] = 0
 
     def generate(self) -> None:
         """
@@ -59,6 +55,7 @@ class KruskalMaze(Maze):
                 self.maze[i][j]['E'] = False
                 self.maze[i][j]['S'] = False
                 self.maze[i][j]['W'] = False
+                self.zone_dict[str(zone_id)] = [(i, j)]
                 zone_id += 1
         walls = []
 
@@ -68,6 +65,7 @@ class KruskalMaze(Maze):
                     walls.append((i, j, 'E'))
                 if i < self.height - 1:
                     walls.append((i, j, 'S'))
+
         random.shuffle(walls)
         for (i, j, direction) in walls:
             self.merge(i, j, direction)
@@ -120,8 +118,7 @@ class KruskalMaze(Maze):
         cell[wall_cell] = True
         neighbor[wall_neighbor] = True
 
-        for x in range(self.height):
-            for y in range(self.width):
-                if self.maze[x][y]['zone'] == zone2:
-                    self.maze[x][y]['zone'] = zone1
+        for pos in self.zone_dict[str(zone2)]:
+            self.maze[pos[0]][pos[1]]['zone'] = zone1
+        self.zone_dict[str(zone1)] += self.zone_dict[str(zone2)]
         return True

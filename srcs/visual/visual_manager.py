@@ -158,7 +158,6 @@ class VisualManager:
                 if self.path.speed < 5:
                     self.path.speed += 1
             case Commands.PREV_PATH.value:
-                print(self.path.actual_path)
                 if self.path.actual_path - 1 > 0:
                     self.path.actual_path -= 1
                 else:
@@ -167,7 +166,6 @@ class VisualManager:
                     self.maze.refresh()
                     self.path.handle_path()
             case Commands.NEXT_PATH.value:
-                print(self.path.actual_path)
                 if self.path.actual_path + 1 < len(self.path.paths):
                     self.path.actual_path += 1
                 else:
