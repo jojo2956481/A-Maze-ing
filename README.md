@@ -20,7 +20,7 @@ Then, you can run with the command *make run*.
 
  For norm and typing checking, run *make lint*, or *make lint-strict* for strict checking.
 
- Run *make clean* to clean dependencies like pycache or created files.
+ Run `make clean` to clean dependencies like pycache or created files.
 
  To run the project in debug mode using python built-in debugger, run *make debug*.
 
@@ -229,4 +229,3 @@ color management: https://htmlcolorcodes.com/
  - mlx installation comprehension
  - infinite loop debug
  - wilson algorithm comprehension and debug
-
