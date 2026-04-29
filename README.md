@@ -1,7 +1,7 @@
 *This project has been created as part of the 42 curriculum by lebeyssa, eel-kerc.*
 
 
-## Descripton
+## <font color="#6495ED">Descripton </font>
 
 **A-maze-ing** is a maze generation project.  
 Any algorithm can be used to generate and solve the maze.  
@@ -10,7 +10,7 @@ Maze informations is then stored in a output_maze.txt.
 The maze algorithm can be transform in a .whl to be reuse in other projects that requires maze. 
 
 
-## Instructions
+## <font color="#818589">Instructions</font>
 
  To run this project, you should **install the required dependencies** with the following command 
  ``` shell
@@ -52,9 +52,9 @@ make debug
 ```
 
 
-## Projects choices
+## <font color="#009E60">Projects choices</font>
 
-### Config format:
+### <font color="#F3E5AB">Config format:</font>
 The configuration file is set up in key=value format to retrieve the data necessary for generating and solving the maze
 
 Example: 
@@ -73,8 +73,9 @@ Example:
 
 The key SEED=45 (always the same maze) and WINDOW= 1 <= x <= 3 (display window) are optional
 
-### Mazes generations and algorithms:
+### <font color="#FFAC1C">Mazes generations and algorithms:</font>
 We have implemented 3 algorithms
+
 - ***Breadth-First Search (BFS) Maze Generation:***
 
    The Breadth-First Search (BFS) algorithm can be used to
@@ -139,7 +140,7 @@ We have implemented 3 algorithms
    It chooses a cell that has not been open yet.   
    It loops until it reaches the the current maze with the same loop and fall back logic.
 
-### Why the algorithms
+### <font color="#CF9FFF">Why the algorithms</font>
 
 These three algorithms allowed us to see different ways of generating a maze, as well as their drawbacks and advantages.   
 Breadth-First Search (BFS), Kruskal’s algorithm, and Wilson’s algorithm each have distinct strengths and weaknesses for maze generation.   
@@ -147,14 +148,14 @@ BFS is simple and fast to implement, producing mazes with good connectivity and 
 Kruskal’s algorithm generates perfect mazes with a good balance of randomness and structure, avoiding cycles and scaling efficiently with the help of a Union-Find data structure, though it is more complex to implement, uses more memory, and offers limited control over the maze’s visual style.   
 Wilson’s algorithm, on the other hand, produces perfect mazes with true uniform randomness and natural, organic-looking paths thanks to loop-erased random walks, but it is slower, more complex to implement, and has less predictable performance, especially on large grids.
 
-### Project reusability
+### <font color="#E2DFD2">Project reusability</font>
 
 The maze generators can be transformed into a .whl (a binary file) and a .tar (a zip file) that can be reused in other project.   
 The .whl can be install with the command pip install or the .tar unzip with the command tar -xf.   
 To create these file, you can run the command make build.    
 The project is in a directory name mazegen and can be imported after installation as import mazegen.   
 
-### Project management:
+### <font color="#71797E">Project management:</font>
 
 ***role of each member***
 
@@ -197,14 +198,14 @@ The project is in a directory name mazegen and can be imported after installatio
     G --> F
 ```
 
-### What is working well and what can be improved
+### <font color="#353935">What is working well and what can be improved</font>
 
 The project is working well overall.   
 What can be imrpoved is the mlx usage with the commands, because the mlx nerfed the string put and it crashes sometimes.   
 A function that create text with image can be done to be perfect.   
 
 
-### Tools used descriptions
+### <font color="#E0BFB8">Tools used descriptions</font>
 
 For parsing we used the pydantic module and for the graphical interface we used the MLX library
 
@@ -224,13 +225,13 @@ into the correct types. Pydantic is widely used in modern Python applications (e
 reduce boilerplate code, and provide clear error messages.   
 
 
-## Additionnal features management
+## <font color="#40E0D0">Additionnal features management</font>
 
-### - Multiple algorithms management
+### <font color="#5C4033">- Multiple algorithms management</font>
 
 The default algorithm is set to DFS. It can be change with keyboard interaction. The change work with indexes of the list of the algorithms, making it easy to add more algorithms.
 
-### - Play mode
+### <font color="#E34234">- Play mode</font>
 
 The play mode can be enable or disable with the keyboard (see commands when running).  
 It works with mouse postion. It gets the position and find out which direction is the most dominant to move the square.  
@@ -239,14 +240,14 @@ Each direction has a wall check. Every check works the same way :
  - It gets the position of the corners in the maze and the walls that requires checks
  - It finally checks if the corners coordinates are in the walls coordinates, to enable slice over differents cells.
 
-### - Solution display
+### <font color="#FFFFFF">- Solution display</font>
 
 The default solution display is set to the quickest path.  
 If the maze is set to not perfect, all possibles solutions can be displayed.  
 There is a instant mode that can be enable/disable. If disable, the speed can be modified (see commands when running)
 
 
-## Resources
+## <font color="#5D3FD3">Resources</font>
 
 Mermaid : https://mermaid.ai/open-source/intro/getting-started.html   
 pydantic : https://pydantic.dev/docs/validation/latest/get-started   
@@ -256,7 +257,7 @@ mlx : https://qst0.github.io/ft_libgfx/man_mlx.html ,
       https://aurelienbrabant.fr/blog/getting-started-with-the-minilibx    
 color management: https://htmlcolorcodes.com/    
 
-### AI Usage
+### <font color="#880808">AI Usage</font>
 
  - mlx installation comprehension
  - infinite loop debug

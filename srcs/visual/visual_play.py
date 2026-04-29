@@ -1,4 +1,4 @@
-from mlx import Mlx  # type: ignore
+from mlx import Mlx
 from typing import Any
 from srcs.mazegen.maze import Maze
 from srcs.visual.visual_maze import VisualMaze

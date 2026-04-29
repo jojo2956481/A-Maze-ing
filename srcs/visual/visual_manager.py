@@ -1,4 +1,4 @@
-from mlx import Mlx  # type: ignore
+from mlx import Mlx
 from srcs.visual.visual_info import VisualInfo
 from srcs.visual.visual_maze import VisualMaze
 from srcs.visual.visual_path import VisualPath
@@ -126,6 +126,7 @@ class VisualManager:
             case Commands.NEW_MAZE.value:
                 self.maze.maze.generate_maze()
                 self.maze.refresh()
+                self.path.cell = 0
                 create_file(self.maze.maze, self.name)
                 self.path.paths = self.maze.maze.paths
             case Commands.RANDOM_COLOR.value:

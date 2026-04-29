@@ -7,8 +7,8 @@ class KeyValidation(BaseModel):
     """
     class with pydantic 'BaseModel' to check key and value
     """
-    WIDTH: int = Field(ge=1)
-    HEIGHT: int = Field(ge=1)
+    WIDTH: int = Field(ge=1, le=400)
+    HEIGHT: int = Field(ge=1, le=400)
     ENTRY: str
     EXIT: str
     OUTPUT_FILE: str

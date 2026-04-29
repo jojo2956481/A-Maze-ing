@@ -1,6 +1,6 @@
 import sys
 try:
-    import mlx  # type: ignore
+    import mlx
     import pydantic
     mlx.Mlx()
     pydantic.AfterValidator
@@ -12,6 +12,7 @@ from srcs.mazegen.dfs_iterative import DfsMaze
 from srcs.mazegen.kruskal import KruskalMaze
 from srcs.visual.visual_manager import VisualManager
 import srcs.data_handling.parsing as parsing
+from srcs.data_handling.output_file import create_file
 from enum import Enum
 from typing import Any
 import sys
@@ -82,7 +83,10 @@ class HandleMaze:
             self.visual.maze.maze = self.mazes[self.actual_maze]
             self.visual.play.maze = self.mazes[self.actual_maze]
             self.visual.path.paths = self.visual.maze.maze.paths
+            self.visual.path.cell = 0
             self.visual.maze.refresh()
+            create_file(self.mazes[self.actual_maze],
+                        self.data["OUTPUT_FILE"])
 
     def looping(self) -> None:
         """

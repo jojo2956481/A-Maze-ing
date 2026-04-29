@@ -1,6 +1,6 @@
 import random
 from srcs.mazegen.maze import Maze
-from mlx import Mlx  # type: ignore
+from mlx import Mlx
 from typing import Any
 
 

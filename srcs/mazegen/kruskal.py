@@ -26,6 +26,8 @@ class KruskalMaze(Maze):
         self.generate()
         if not self.perfect:
             self.imperfect_maze()
+        self.paths = [[value[0] for value in path] for path in
+                      self.solver()]
 
     def init_grid(self) -> None:
         """

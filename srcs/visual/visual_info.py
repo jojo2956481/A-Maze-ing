@@ -1,5 +1,5 @@
 from srcs.visual.xpm.xpm_generator import create_xpm_title
-from mlx import Mlx  # type: ignore
+from mlx import Mlx
 from typing import Any
 
 
